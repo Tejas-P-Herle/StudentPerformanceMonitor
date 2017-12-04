@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block title%}Marks Analyzer: Leaderboard{% endblock %}
+{% block body %}
+Leaderboard
+<br>
+Exams:
+<select id='exams' onchange=dropdownChange()>
+  <option selected disabled>Select</option>
+  <option value="all">All</option>
+  <option value="FA1">FA1</option>
+  <option value="FA2">FA2</option>
+  <option value="FA3">FA3</option>
+  <option value="FA4">FA4</option>
+  <option value="SA1">SA1</option>
+  <option value="SA2">SA2</option>
+</select>
+<table>
+  <thead>
+	<td>Rank</td>
+	<td>Names</td>
+	<td>Marks</td>
+	<td>Percentage</td>
+	<td>Percentile</td>
+  </thead>
+  {% for data in stdntData[:-1] %}
+  <tr>
+	<td>{{ data[1] }}.</td>
+	<td id='name{{ data[1] }}'>{{ data[2] }}</td>
+	<td id='total{{ data[1] }}'>{{ data[3] }}</td>
+	<td>{{ data[4] }}</td>
+	<td>{{ data[5] }}</td>
+	<td><a href='/student?uid={{ data[0] }}&exam={{ stdntData[10] }}'>
+		View Student</a></td>
+  </tr>
+  {% endfor %}
+</table>
+<!-- Ratio 10:7 -->
+<div id="graph_div" style="height: 350px;"></div>
+<script>
+	let marks;
+
+	function dropdownChange(){
+		exam = $('#exams').val()
+		if (exam != 'Select'){
+			location.href = ('?exam=' + exam);
+		}
+	}
+	var resizeId;
+	$(window).resize(function() {
+		clearTimeout(resizeId);
+		resizeId = setTimeout(plotLineGraph, 49);
+	});
+	
+	function plotBarGraph(){
+		marks = new Object();
+		marks.name = [];
+		marks.total = [];
+		for (let i=1; i < 11; i++) { 
+			marks.name.push($('#name' + i).html());
+			marks.total.push($('#total' + i).html());
+		}
+		drawGraph('bar', marks);
+	}
+	function plotLineGraph() {
+		if (!marks) {
+			$.ajax({
+			url: "/getClassMarks" + window.location.search.substr(0),
+			async: false,
+			success: function(response){
+				marks = response;
+			}});
+		}
+		drawGraph('line', marks);
+	}
+	plotLineGraph();
+</script>
+{% endblock %}

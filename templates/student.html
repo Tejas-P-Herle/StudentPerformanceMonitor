@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+{% block title %}Student{% endblock %}
+{% block body %}
+Student: <br>
+Name: {{ name }}<br>
+ID: {{ uid }}<br>
+<div id='exam'></div>
+<div id='exmTotal'>Exam Total: {{ exmTotal }}</div>
+<div id='change'>Change: {{ chngPertage }}</div>
+<div id='change'>Performance: {{ chngPertile }}</div>
+<div id='graph_div'><div>
+<script>
+	let mark;
+	let exams = false;
+
+	if ('{{ exam }}' == '') {
+		$('#exam').html('Exam: All');
+		exams = true;
+	}
+	else {
+		$('#exam').html('Exam: {{ exam }}');
+	}
+	
+	$.ajax({
+		url: "getMarks?uid={{ uid }}&exam={{ exam }}",
+		async: false,
+		success: function(result){
+			marks = result;
+			drawGraph('bar', marks, exams);
+		}
+	});
+	var resizeId;
+	$(window).resize(function() {
+		clearTimeout(resizeId);
+		resizeId = setTimeout(function(){
+			drawGraph('bar', marks, exams);
+		}, 49);
+	});
+</script>
+{% endblock %}

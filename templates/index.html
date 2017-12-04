@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+{% block title %}Marks Analyzer{% endblock %}
+{% block body %}
+Welcome to Marks Analyzer
+<br>
+Login
+<form action="/login">
+  <input id="userName" type="text" placeholder="User Name"></input>
+  <input id="password" type="password" placeholder="Passoword"></input>
+  <input id="login" type="submit" value="Login"></input>
+</form>
+{% endblock %}

@@ -1,0 +1,1 @@
+This folder mainly contains all the html files which make up the webpage

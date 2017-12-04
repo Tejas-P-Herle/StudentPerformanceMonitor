@@ -1,0 +1,8 @@
+Folder: libs
+
+Contains all the self developed libraries for easing the programming process
+
+Current Contents:
+
+1. SQLFuncs.py:
+      Contains all the basic sql functions like select insert delete etc
