@@ -29,7 +29,7 @@ Exams:
 	<td id='total{{ data[1] }}'>{{ data[3] }}</td>
 	<td>{{ data[4] }}</td>
 	<td>{{ data[5] }}</td>
-	<td><a href='/student?uid={{ data[0] }}&exam={{ stdntData[10] }}'>
+	<td><a href='/student?uid={{ data[0] }}&exam={{ stdntData[-1] }}'>
 		View Student</a></td>
   </tr>
   {% endfor %}
@@ -40,10 +40,16 @@ Exams:
 	let marks;
 
 	function dropdownChange(){
-		exam = $('#exams').val()
-		if (exam != 'Select'){
-			location.href = ('?exam=' + exam);
+		exam = 'exam=' + $('#exams').val()
+		let url = window.location.search.substr(0);
+		getParams = url.split('&');
+		if (getParams.length == 3) {
+			getParams[2] = exam;
 		}
+		else {
+			getParams.push(exam);
+		}
+		location.href = (getParams.join('&'));
 	}
 	var resizeId;
 	$(window).resize(function() {

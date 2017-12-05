@@ -1,4 +1,4 @@
-function drawGraph(graph, marks) {
+function drawGraph(graph, marks, exams=false) {
 	if (graph == "bar") {
 		google.charts.load("current", {packages:["bar"]});
 		google.charts.setOnLoadCallback(function() {
@@ -6,9 +6,11 @@ function drawGraph(graph, marks) {
 			title='';
 			barGraph(data, title);
 		});
-	} else if (graph == "donut") {
+	} else if (graph == "pie") {
 		google.charts.load("current", {packages:["corechart"]});
-		google.charts.setOnLoadCallback(donutGraph);
+		google.charts.setOnLoadCallback(function() {
+			pieGraph(pieMTDT(marks, exams));
+		});
 	} else if (graph == "line") {
 		google.charts.load('current', {'packages':['corechart']});
 		google.charts.setOnLoadCallback(function() {
@@ -19,8 +21,32 @@ function drawGraph(graph, marks) {
 
 // MTDT: Marks To DataTable
 
+function pieMTDT(marks, exams) {
+	let data = new google.visualization.DataTable();
+	let params;
+	let titles;
+	if (!exams) {
+		params = ['I_Language', 'II_Language', 'III_Language', 'Maths', 'Science', 'Social'];
+		titles = ['Subjects', 'Strength'];
+	}
+	else {
+		params = ['FA1', 'FA2', 'FA3', 'FA4', 'SA1', 'SA2'];
+		titles = ['Exams', 'Performance'];
+	}
+	return google.visualization.arrayToDataTable([
+		[titles[0], titles[1]],
+		[params[0], marks[0]],
+		[params[1], marks[1]],
+		[params[2], marks[2]],
+		[params[3], marks[3]],
+		[params[4], marks[4]],
+		[params[5], marks[5]]
+	]);
+}
+
+
 function lineMTDT(marks) {
-	let data = new google.visualization.DataTable()
+	let data = new google.visualization.DataTable();
 	let exams = ['FA1', 'FA2', 'SA1', 'FA3', 'FA4', 'SA2'];
 	data.addColumn('string', 'Exams');
 		
@@ -76,20 +102,9 @@ function barMTDT(marks) {
 	}
 }
 
-function donutGraph() {
-	var data = google.visualization.arrayToDataTable([
-	  ['Subject', 'Strength'],
-	  ['I_Language',   	20],
-	  ['II_Language',   20],
-	  ['III_Language',  20],
-	  ['Maths', 		20],
-	  ['Science',		20],
-	  ['Social', 		20]
-	]);
-
+function pieGraph(data) {
 	var options = {
-	  title: 'Strength of Subjects',
-	  pieHole: 0.4,
+	  title: 'Wheel of Performance',
 	};
 
 	var chart = new google.visualization.PieChart(document.getElementById('graph_div'));

@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, 'C:\\Users\\Tejas. P. Herle\\Programming\\Web\\StudentPerformanceMonitor\\libs\\')
+
 from flask import Flask, render_template, request, jsonify
 from libs.library import *
 
@@ -18,14 +21,20 @@ def leaderboard():
     stndrd = request.args.get('stndrd')
     section = request.args.get('section')
 
+    if not (stndrd or section):
+        return 'Please provide a standard and a section'
+
     if exam in [None, 'all', 'select']: exam = ''
     
     stats = list(Grade(stndrd, section).getStats(10, exam))
 
     stdntData = []
     for i in range(len(stats[0])):
-        stdntData.append([stats[0][i], i + 1, stats[1][i],
-                          stats[2][i], stats[3][i], stats[4][i]])
+        if type(stats[0][i]) != list:
+            stdntData.append([stats[0][i], i + 1, stats[1][i], stats[2][i], stats[3][i], stats[4][i]])
+        else:
+            for j in range(len(stats[0][i])):
+                stdntData.append([stats[0][i][j], i + 1, stats[1][i][j], stats[2][i][j], stats[3][i][j], stats[4][i][j]])
     return render_template('leaderboard.html', stdntData=stdntData + [exam])
 
 @app.route('/getClassMarks')
@@ -64,23 +73,24 @@ def student():
     exam = request.args.get('exam')
     name = Student(uid).getName()
 
-    chngPertage = chngPertile = 0
+    chngPercent = chngPertile = 0
     exmObj = Exams(uid)
-    exmTotal = exmObj[exam]['total']
+    if exam:
+        exmTotal = exmObj[exam]['total']
+    else:
+        exmTotal = exmObj['total']
 
     exams = ['FA1', 'FA2', 'SA1', 'FA3', 'FA4', 'SA2']
 
     if not exam in ['', 'FA1']:
         index = exams.index(exam)
-        prevPertage = exmObj.calcPercentage(exam)
-        currPertage = exmObj.calcPercentage(exams[index - 1])
-        chngPertage = round(prevPertage - currPertage, 2)
+        prevPercent = exmObj.calcPercentage(exam)
+        currPercent = exmObj.calcPercentage(exams[index - 1])
+        chngPercent = round(prevPercent - currPercent, 2)
         prevPertile = exmObj.calcPercentile(exam)
         currPertile = exmObj.calcPercentile(exams[index - 1])
         chngPertile = round(prevPertile - currPertile, 2)
-    return render_template('student.html', uid=uid, exam=exam, name=name,
-                           chngPertage=chngPertage, chngPertile=chngPertile,
-                           exmTotal=exmTotal)
+    return render_template('student.html', uid=uid, exam=exam, name=name, chngPercent=chngPercent, chngPertile=chngPertile, exmTotal=exmTotal)
 
 if __name__ == '__main__':
     app.run('0.0.0.0', 5000, debug=True)

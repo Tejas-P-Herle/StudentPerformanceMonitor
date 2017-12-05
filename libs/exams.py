@@ -1,9 +1,5 @@
-try:
-    from libs.sql import SQLFuncs
-    from libs.leaderboard import getBest
-except:
-    from sql import SQLFuncs
-    from leaderboard import getBest
+from sql import SQLFuncs
+from leaderboard import getBest
 
 SQL = SQLFuncs()
 

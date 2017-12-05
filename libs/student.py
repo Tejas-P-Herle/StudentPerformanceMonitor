@@ -1,12 +1,13 @@
-try:
-    from libs.sql import SQLFuncs
-except:
-    from sql import SQLFuncs
+from sql import SQLFuncs
+from exams import Exams
 
 SQL = SQLFuncs()
 class Student(dict):
     def __init__(self, uid):
         self.uid = uid
+
+    def initExam(self):
+        self.exams = Exams(self.uid)
 
     def getName(self):
         return SQL.getName(self.uid)

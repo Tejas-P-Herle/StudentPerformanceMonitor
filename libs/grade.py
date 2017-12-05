@@ -1,22 +1,8 @@
-print('Start')
-try:
-    from libs.student import Student
-    from libs.sql import SQLFuncs
-    from libs.leaderboard import getLeaderboard, getTotal
-except:
-    print('Importing(B Set)')
-    from student import Student
-    print('Student imported')
-    from sql import SQLFuncs
-    print('SQL imported')
-    from leaderboard import getLeaderboard, getTotal
-    print('Leaderboard imported')
-
-print('Importing Done')
-    
+from student import Student
+from sql import SQLFuncs
+from leaderboard import getLeaderboard, getTotal
+ 
 SQL = SQLFuncs()
-
-print('SQLFuncs obj created')
 
 exams = ['FA1', 'FA2', 'FA3', 'FA4', 'SA1', 'SA2']
 
@@ -52,19 +38,19 @@ class Grade():
         ptiles = []
         ttls = []
         for uid in uids:
-            if type(uid) != list:
-                stdnt = Student(uid)
-                names.append(stdnt.getName())
-                ptages.append(stdnt.exams.calcPercentage(exam))
-                ptiles.append(stdnt.exams.calcPercentile(exam))
-                ttls.append(getTotal(uid, exam))
-            else:
+            stdnt = None
+            if type(uid) == list:
+                lclNames = []
                 for u in uid:
                     stdnt = Student(u)
-                    names.append(stdnt.getName())
-                    ptages.append(stdnt.exams.calcPercentage(exam))
-                    ptiles.append(stdnt.exams.calcPercentile(exam))
-                    ttls.append(getTotal(u, exam))
+                    lclNames.append(stdnt.getName())
+                names.append(lclNames)
+            else:
+                stdnt = Student(uid)
+                names.append(stdnt.getName())
+            u = stdnt.uid
+            stdnt.initExam()
+            ptages.append(stdnt.exams.calcPercentage(exam))
+            ptiles.append(stdnt.exams.calcPercentile(exam))
+            ttls.append(getTotal(u, exam))
         return uids, names, ttls, ptages, ptiles
-    
-print('Setup complete')

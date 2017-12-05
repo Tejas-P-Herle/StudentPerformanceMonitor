@@ -6,9 +6,9 @@ Name: {{ name }}<br>
 ID: {{ uid }}<br>
 <div id='exam'></div>
 <div id='exmTotal'>Exam Total: {{ exmTotal }}</div>
-<div id='change'>Change: {{ chngPertage }}</div>
-<div id='change'>Performance: {{ chngPertile }}</div>
-<div id='graph_div'><div>
+<div id='chngPercent'>Change in Percentage: {{ chngPercent }}</div>
+<div id='chngPertile'>Change in Percentile: {{ chngPertile }}</div>
+<div id='graph_div' style="height: 500px;"><div>
 <script>
 	let mark;
 	let exams = false;
@@ -20,20 +20,40 @@ ID: {{ uid }}<br>
 	else {
 		$('#exam').html('Exam: {{ exam }}');
 	}
+	if (parseFloat('{{ chngPercent }}') > 0) {
+		let text = $('#chngPercent').text()
+		$('#chngPercent').text(text.replace(': ', ': +'))
+	}
+	if (parseFloat('{{ chngPertile }}') > 0) {
+		let text = $('#chngPertile').text()
+		$('#chngPertile').text(text.replace(': ', ': +'))
+	}
 	
 	$.ajax({
 		url: "getMarks?uid={{ uid }}&exam={{ exam }}",
 		async: false,
 		success: function(result){
-			marks = result;
-			drawGraph('bar', marks, exams);
+			marks = result.total;
+			if ('{{ exam }}'[0] == 'S') {
+				marks[0] = marks[0] / 125 * 100;
+			}
+			if (exams) {
+				for (let i=0; i < 4; i++) {
+					marks[i] = marks[i] / 300 * 100
+				}
+				for (let i=4; i < 6; i++) {
+					marks[i] = marks[i] / 625 * 100
+				}
+			}
+			console.log(marks);
+			drawGraph('pie', marks, exams);
 		}
 	});
 	var resizeId;
 	$(window).resize(function() {
 		clearTimeout(resizeId);
 		resizeId = setTimeout(function(){
-			drawGraph('bar', marks, exams);
+			drawGraph('pie', marks, exams);
 		}, 49);
 	});
 </script>

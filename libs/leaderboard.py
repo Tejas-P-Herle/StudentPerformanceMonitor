@@ -1,7 +1,4 @@
-try:
-    from libs.sql import SQLFuncs
-except:
-    from sql import SQLFuncs
+from sql import SQLFuncs
 
 SQL = SQLFuncs()
 exams = ['FA1', 'FA2', 'FA3', 'FA4', 'SA1', 'SA2']
