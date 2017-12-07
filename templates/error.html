@@ -1,0 +1,11 @@
+{% extends "layout.html"%}
+{% block title %}{{ errorPage }}-ERROR{% endblock %}
+{% block body %}
+<div id='error'>{{ errorMsg }}</div>
+<div id='errorElems'></div>
+<script>
+	if ('{{ errorNo }}' == 'ER0101') { 
+		leaderboardOptions('errorElems');
+	}
+</script>
+{% endblock %}

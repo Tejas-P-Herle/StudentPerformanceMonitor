@@ -129,11 +129,118 @@ function barGraph(data, title='', subtitle='') {
 
 function lineGraph(data) {
     var options = {
-      title: 'Class Performance',
-      curveType: 'function',
-      legend: { position: 'bottom' }
+	title: 'Class Performance',
+	curveType: 'function',
+	legend: { position: 'bottom' }
     };
 
 	var chart = new google.visualization.LineChart(document.getElementById('graph_div'));
 	chart.draw(data, options);
+}
+
+// END OF GRAPH SECTION
+
+function leaderboardOptions(div) {
+	let html = "";
+	let options = {'stndrd': 'Standard', 'section': 'Section', 'exam': 'Exam'};
+	$.each(options, function (selectBox, title) {
+		html += title + ": <select id='" + selectBox + "'><option selected disabled>Select</option></select>";
+	});
+	$('#' + div).html(html);
+
+	let stndrds = ['10', '9', '8', '7', '6', '5', '4', '3', '2', '1'];
+	let sections = ['A', 'B', 'C'];
+	let exams = ['FA1', 'FA2', 'SA1', 'FA3', 'FA4', 'SA2'];
+
+	$.each(stndrds, function (_, stndrd) {
+		$('#stndrd').append($('<option>', {
+			value: stndrd,
+			text: stndrd
+		}));
+	});
+
+	$.each(sections, function (_, section) {
+			$('#section').append($('<option>', { 
+				value: section,
+				text : section 
+			}));
+	});
+
+	$.each(exams, function (_, exam) {
+			$('#exam').append($('<option>', { 
+				value: exam,
+				text : exam 
+			}));
+	});
+
+	function strtsWithStndrd(getParam) {
+		return getParam.slice(0, 6) == 'stndrd';
+	}
+
+	$('#stndrd').on('change', function () {
+		stndrd = 'stndrd=' + $('#stndrd').val();
+		let url = window.location.search.substr(1);
+		if (url != '') {
+			let getParams = url.split('&');
+			let param = getParams.find(strtsWithStndrd);
+
+			if (param) {
+				getParams[getParams.indexOf(param)] = stndrd;
+			}
+			else {
+				getParams.push(stndrd);
+			}
+			location.href = '?' + getParams.join('&');
+		}
+		else {
+			location.href += '?' + stndrd;
+		}
+	});
+	
+	function strtsWithSection(getParam) {
+		return getParam.slice(0, 7) == 'section';
+	}
+
+	$('#section').on('change', function () {
+		section = 'section=' + $('#section').val();
+		let url = window.location.search.substr(1);
+		if (url != '') {
+			let getParams = url.split('&');
+			let param = getParams.find(strtsWithSection);
+
+			if (param) {
+				getParams[getParams.indexOf(param)] = section;
+			}
+			else {
+				getParams.push(section);
+			}
+			location.href = '?' + getParams.join('&');
+		}
+		else {
+			location.href += '?' + section;
+		}
+	});
+
+	function strtsWithExam(getParam) {
+		return getParam.slice(0, 4) == 'Exam';
+	}	
+	
+	$('#exam').on('change', function () {
+		exam = 'exam=' + $('#exam').val()
+		let url = window.location.search.substr(1);
+		if (url != '') {
+			let getParams = url.split('&');
+			let param = getParams.find(strtsWithExam);
+			if (param) {
+				getParams[getParams.indexOf(param)] = exam;
+			}
+			else {
+				getParams.push(exam);
+			}
+			location.href = '?' + getParams.join('&');
+		}
+		else {
+			location.href += '?' + exam;
+		}
+	});
 }

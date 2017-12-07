@@ -21,8 +21,11 @@ def leaderboard():
     stndrd = request.args.get('stndrd')
     section = request.args.get('section')
 
-    if not (stndrd or section):
-        return 'Please provide a standard and a section'
+    if not (stndrd and section):
+        errorMsg = 'Please provide a standard and a section'
+        errorPage = 'Leaderboard'
+        errorNo = 'ER0101'
+        return render_template('error.html', errorPage=errorPage, errorMsg=errorMsg, errorNo=errorNo)
 
     if exam in [None, 'all', 'select']: exam = ''
     
@@ -34,7 +37,7 @@ def leaderboard():
             stdntData.append([stats[0][i], i + 1, stats[1][i], stats[2][i], stats[3][i], stats[4][i]])
         else:
             for j in range(len(stats[0][i])):
-                stdntData.append([stats[0][i][j], i + 1, stats[1][i][j], stats[2][i][j], stats[3][i][j], stats[4][i][j]])
+                stdntData.append([stats[0][i][j], i + 1, stats[1][i][j], stats[2][i], stats[3][i], stats[4][i]])
     return render_template('leaderboard.html', stdntData=stdntData + [exam])
 
 @app.route('/getClassMarks')
