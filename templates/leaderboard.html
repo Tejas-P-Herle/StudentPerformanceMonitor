@@ -4,7 +4,7 @@
 {% block body %}
 Leaderboard
 <br>
-Exams:
+<div id='options'></div>
 <table>
   <thead>
 	<td>Rank</td>
@@ -25,19 +25,22 @@ Exams:
   </tr>
   {% endfor %}
 </table>
-<div id='options'></div>
 <!-- Ratio 10:7 -->
 <div id="graph_div" style="height: 350px;"></div>
 <script>
 	let marks;
-
+	let examParam = window.location.search.substr(1).split('&');
+	examParam = examParam.find(function(param) { return param.slice(0, 4) == 'exam' });
+	examParam = examParam ? examParam.replace('exam=', '') : null;
+	examParam = examParam == 'All' ? null : examParam;
+	
 	$('#graph_div').css('height', window.outerHeight + 'px');
 	
 	leaderboardOptions('options');
 	var resizeId;
 	$(window).resize(function() {
 		clearTimeout(resizeId);
-		resizeId = setTimeout(plotLineGraph, 49);
+		resizeId = setTimeout(plotGraph, 49);
 	});
 	
 	function plotBarGraph(){
@@ -50,17 +53,20 @@ Exams:
 		}
 		drawGraph('bar', marks);
 	}
-	function plotLineGraph() {
-		if (!marks) {
-			$.ajax({
+	
+	function getClassMarks() {
+		$.ajax({
 			url: "/getClassMarks" + window.location.search.substr(0),
 			async: false,
-			success: function(response){
-				marks = response;
-			}});
-		}
-		drawGraph('line', marks);
+			success: function(response){ marks =  response; }
+		});
 	}
-	plotLineGraph();
+	
+	getClassMarks();
+	
+	function plotGraph() {
+		drawGraph('line', marks, examParam);
+	}
+	plotGraph()
 </script>
 {% endblock %}

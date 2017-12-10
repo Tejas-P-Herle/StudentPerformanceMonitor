@@ -1,36 +1,38 @@
-function drawGraph(graph, marks, exams=false) {
+let subjs = ['I_Language', 'II_Language', 'III_Language', 'Maths', 'Science', 'Social'];
+let exams = ['FA1', 'FA2', 'FA3', 'FA4', 'SA1', 'SA2'];
+
+function drawGraph(graph, marks, isSubj=false, options=null) {
 	if (graph == "bar") {
 		google.charts.load("current", {packages:["bar"]});
 		google.charts.setOnLoadCallback(function() {
-			data = barMTDT(marks);
 			title='';
-			barGraph(data, title);
+			barGraph(barMTDT(marks, isSubj), title, options);
 		});
 	} else if (graph == "pie") {
 		google.charts.load("current", {packages:["corechart"]});
 		google.charts.setOnLoadCallback(function() {
-			pieGraph(pieMTDT(marks, exams));
+			pieGraph(pieMTDT(marks, isSubj), options);
 		});
 	} else if (graph == "line") {
 		google.charts.load('current', {'packages':['corechart']});
 		google.charts.setOnLoadCallback(function() {
-			lineGraph(lineMTDT(marks));
+			lineGraph(lineMTDT(marks, isSubj), options);
 		});
 	}
 }
 
 // MTDT: Marks To DataTable
 
-function pieMTDT(marks, exams) {
+function pieMTDT(marks, isExam) {
 	let data = new google.visualization.DataTable();
 	let params;
 	let titles;
-	if (!exams) {
-		params = ['I_Language', 'II_Language', 'III_Language', 'Maths', 'Science', 'Social'];
+	if (!isExam) {
+		params = subjs;
 		titles = ['Subjects', 'Strength'];
 	}
 	else {
-		params = ['FA1', 'FA2', 'FA3', 'FA4', 'SA1', 'SA2'];
+		params = exams;
 		titles = ['Exams', 'Performance'];
 	}
 	return google.visualization.arrayToDataTable([
@@ -45,9 +47,10 @@ function pieMTDT(marks, exams) {
 }
 
 
-function lineMTDT(marks) {
+function lineMTDT(marks, isSubj) {
 	let data = new google.visualization.DataTable();
-	let exams = ['FA1', 'FA2', 'SA1', 'FA3', 'FA4', 'SA2'];
+	let params = isSubj ? subjs : exams;
+	let Param = 
 	data.addColumn('string', 'Exams');
 		
 	for (let i=0; i < marks.name.length; i++) {
@@ -55,7 +58,7 @@ function lineMTDT(marks) {
 	}
 	data.addRows(6);
 	for (let j=0; j < 6; j++) {
-		data.setCell(j, 0, exams[j]);
+		data.setCell(j, 0, params[j]);
 		for (let i=0; i < marks.name.length; i++) {
 			data.setCell(j, i + 1, marks.percent[i][j]);
 		}
@@ -63,12 +66,12 @@ function lineMTDT(marks) {
 	return data;
 }
 
-function barMTDT(marks) {
+function barMTDT(marks, isExam) {
 	if (marks.ppt && marks.activity && marks.total) {
 		let ppt = marks.ppt;
 		let activity = marks.activity;
 		let total = marks.total;
-		if (exams) {
+		if (isExam) {
 			return google.visualization.arrayToDataTable([
 				['Exams', 'PPT', 'Activity', 'Total'],
 				['FA1', ppt[0], activity[0], total[0]],
@@ -90,7 +93,7 @@ function barMTDT(marks) {
 		]);
 	}
 	else if (marks.name && marks.total) {
-		let data = new google.visualization.DataTable()
+		let data = new google.visualization.DataTable();
 		data.addColumn('string', 'Name');
 		data.addColumn('string', 'Total');
 		
@@ -100,26 +103,39 @@ function barMTDT(marks) {
 		}
 		return data;
 	}
+	else if (marks.name && marks.percent) {
+		let data = new google.visualization.DataTable();
+		data.addColumn('string', 'Name');
+		data.addColumn('string', 'Percentage');
+		
+		for (let i=0; i < marks.name.length; i++) {
+			data.addRow([marks.name[i], String(marks.percent[i])]);
+		}
+		return data;
+	}
 }
 
-function pieGraph(data) {
-	var options = {
-	  title: 'Wheel of Performance',
-	};
+function pieGraph(data, options) {
+	if (!options) {
+		 options = {
+			title: 'Wheel of Performance',
+		};
+	}
 
 	var chart = new google.visualization.PieChart(document.getElementById('graph_div'));
 	chart.draw(data, options);
 }
-function barGraph(data, title='', subtitle='') {
+function barGraph(data, title, options, subtitle='') {
 	$("#graph_div").html("")
 	$("#graph_div").attr("id", "loading");
-
-	var options = {
-		hAxis: {
-			slantedText:true,
-			slantedTextAngle:90,
-		}
-	};
+	if (!options) {
+		options = {
+			hAxis: {
+				slantedText:true,
+				slantedTextAngle:90,
+			}
+		};	
+	}
 	$("#loading").attr("id", "graph_div");
 	$("#graph_div").html("");
 	$("#graph_div").height(window.innerHeight / 3);
@@ -127,30 +143,92 @@ function barGraph(data, title='', subtitle='') {
 	chart.draw(data, google.charts.Bar.convertOptions(options));
 }
 
-function lineGraph(data) {
-    var options = {
-	title: 'Class Performance',
-	curveType: 'function',
-	legend: { position: 'bottom' }
-    };
-
+function lineGraph(data, options) {
+    if (!options) {
+		options = {
+		title: 'Class Performance',
+		curveType: 'function',
+		legend: { position: 'bottom' }
+		};
+	}
+	
 	var chart = new google.visualization.LineChart(document.getElementById('graph_div'));
 	chart.draw(data, options);
 }
 
+//
+// ---------------------
 // END OF GRAPH SECTION
+// ---------------------
+//
+
+function submit() {
+	let options = ['stndrd', 'section', 'exam'];
+	let params = {'stndrd': null, 'section': null, 'exam': null};
+	$.each(options, function (_, option) {
+		params[option] = $('#' + option).val();
+	});
+	if (!params.exam) {
+		params.exam = 'all';
+	}
+	if (!(params.stndrd && params.section)) {
+		console.log('Please provide both standard and section');
+	}
+	else {
+		location.href = '?stndrd=' + params.stndrd + '&section=' + params.section + '&exam=' + params.exam
+	}
+}
+
+function strtsWithStndrd(getParam) {
+	return getParam.slice(0, 6) == 'stndrd';
+}
+function strtsWithSection(getParam) {
+	return getParam.slice(0, 7) == 'section';
+}
+function strtsWithExam(getParam) {
+	return getParam.slice(0, 4) == 'exam';
+}
 
 function leaderboardOptions(div) {
-	let html = "";
 	let options = {'stndrd': 'Standard', 'section': 'Section', 'exam': 'Exam'};
-	$.each(options, function (selectBox, title) {
-		html += title + ": <select id='" + selectBox + "'><option selected disabled>Select</option></select>";
-	});
+	getParams = location.search.substr(1).split('&');
+	
+	let stndrd = getParams.find(strtsWithStndrd)
+	if (stndrd) {
+		stndrd = stndrd.replace('stndrd=', '');
+	}
+	else {
+		stndrd = '10';
+	}
+
+	let section = getParams.find(strtsWithSection)
+	if (section) {
+		section = section.replace('section=', '');
+	}
+	else {
+		section = 'A';
+	}
+	let exam = getParams.find(strtsWithExam)
+	if (exam) {
+		exam = exam.replace('exam=', '');
+	}
+	else {
+		exam = 'All';
+	}
+	
+	let html = "Standard: <select id='stndrd'><option selected>" + stndrd  + "</option></select>";
+	html += "Section: <select id='section'><option selected>"+ section + "</option></select>";
+	html += "Exam: <select id='exam'><option selected>" + exam + "</option></select>";
+	html += "<button id=submit onClick=submit()>Submit</button>"
 	$('#' + div).html(html);
 
 	let stndrds = ['10', '9', '8', '7', '6', '5', '4', '3', '2', '1'];
 	let sections = ['A', 'B', 'C'];
-	let exams = ['FA1', 'FA2', 'SA1', 'FA3', 'FA4', 'SA2'];
+	let exams = ['All', 'FA1', 'FA2', 'SA1', 'FA3', 'FA4', 'SA2'];
+	
+	stndrds.splice(stndrds.indexOf(stndrd), 1);
+	sections.splice(sections.indexOf(section), 1);
+	exams.splice(exams.indexOf(exam), 1);
 
 	$.each(stndrds, function (_, stndrd) {
 		$('#stndrd').append($('<option>', {
@@ -171,76 +249,5 @@ function leaderboardOptions(div) {
 				value: exam,
 				text : exam 
 			}));
-	});
-
-	function strtsWithStndrd(getParam) {
-		return getParam.slice(0, 6) == 'stndrd';
-	}
-
-	$('#stndrd').on('change', function () {
-		stndrd = 'stndrd=' + $('#stndrd').val();
-		let url = window.location.search.substr(1);
-		if (url != '') {
-			let getParams = url.split('&');
-			let param = getParams.find(strtsWithStndrd);
-
-			if (param) {
-				getParams[getParams.indexOf(param)] = stndrd;
-			}
-			else {
-				getParams.push(stndrd);
-			}
-			location.href = '?' + getParams.join('&');
-		}
-		else {
-			location.href += '?' + stndrd;
-		}
-	});
-	
-	function strtsWithSection(getParam) {
-		return getParam.slice(0, 7) == 'section';
-	}
-
-	$('#section').on('change', function () {
-		section = 'section=' + $('#section').val();
-		let url = window.location.search.substr(1);
-		if (url != '') {
-			let getParams = url.split('&');
-			let param = getParams.find(strtsWithSection);
-
-			if (param) {
-				getParams[getParams.indexOf(param)] = section;
-			}
-			else {
-				getParams.push(section);
-			}
-			location.href = '?' + getParams.join('&');
-		}
-		else {
-			location.href += '?' + section;
-		}
-	});
-
-	function strtsWithExam(getParam) {
-		return getParam.slice(0, 4) == 'Exam';
-	}	
-	
-	$('#exam').on('change', function () {
-		exam = 'exam=' + $('#exam').val()
-		let url = window.location.search.substr(1);
-		if (url != '') {
-			let getParams = url.split('&');
-			let param = getParams.find(strtsWithExam);
-			if (param) {
-				getParams[getParams.indexOf(param)] = exam;
-			}
-			else {
-				getParams.push(exam);
-			}
-			location.href = '?' + getParams.join('&');
-		}
-		else {
-			location.href += '?' + exam;
-		}
 	});
 }

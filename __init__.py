@@ -27,7 +27,7 @@ def leaderboard():
         errorNo = 'ER0101'
         return render_template('error.html', errorPage=errorPage, errorMsg=errorMsg, errorNo=errorNo)
 
-    if exam in [None, 'all', 'select']: exam = ''
+    if exam in [None, 'All']: exam = ''
     
     stats = list(Grade(stndrd, section).getStats(10, exam))
 
@@ -44,7 +44,9 @@ def leaderboard():
 def getClassMarks():
     stndrd = request.args.get('stndrd')
     section = request.args.get('section')
-    names, percents = Grade(stndrd, section).getClassMarks()
+    exam = request.args.get('exam')
+    if exam in [None, 'All']: exam = ''
+    names, percents = Grade(stndrd, section).getClassMarks(exam)
     return jsonify({'name': names, 'percent': percents})
 
 @app.route('/getMarks')
