@@ -2,6 +2,10 @@ from sql import SQLFuncs
 from exams import Exams
 
 SQL = SQLFuncs()
+
+def getUid(name):
+    return SQL.getUid(name)
+
 class Student(dict):
     def __init__(self, uid):
         self.uid = uid

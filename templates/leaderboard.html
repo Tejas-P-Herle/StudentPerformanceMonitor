@@ -1,9 +1,13 @@
 {% extends "layout.html" %}
+{% block head %}
+	{{ super() }}
+	<script src="{{ url_for('static', filename='leaderboard.js') }}"></script>
+{% endblock %}
 {% block title%}Marks Analyzer: Leaderboard{% endblock %}
 {% block bodyStyle %}style="margin: 25px;"{% endblock %}
 {% block body %}
-Leaderboard
-<br>
+{{ super() }}
+<div id='pageTitle'><h1>Leaderboard</h1></div>
 <div id='options'></div>
 <table>
   <thead>
@@ -26,47 +30,21 @@ Leaderboard
   {% endfor %}
 </table>
 <!-- Ratio 10:7 -->
-<div id="graph_div" style="height: 350px;"></div>
+<div class='graphCont' style='padding: 0px;'>
+<div id="graphDiv" style="height: 500px;"></div>
+</div>
+<div id='previous' class='graphBtn' onclick='gs.plusGraph(-1)'>&#10094;</div>
+<div id='next' class='graphBtn' onclick='gs.plusGraph(1)'>&#10095;</div>
+<div id='dotCont'>
+  <span class="dot" onclick="gs.setGraph(0)"></span>
+  <span class="dot" onclick="gs.setGraph(1)"></span> 
+  <span class="dot dotImpr" onclick="gs.setGraph(2)"></span> 
+  <span class="dot dotImpr" onclick="gs.setGraph(3)"></span>  
+</div>
 <script>
-	let marks;
-	let examParam = window.location.search.substr(1).split('&');
-	examParam = examParam.find(function(param) { return param.slice(0, 4) == 'exam' });
-	examParam = examParam ? examParam.replace('exam=', '') : null;
-	examParam = examParam == 'All' ? null : examParam;
-	
-	$('#graph_div').css('height', window.outerHeight + 'px');
-	
-	leaderboardOptions('options');
-	var resizeId;
-	$(window).resize(function() {
-		clearTimeout(resizeId);
-		resizeId = setTimeout(plotGraph, 49);
+	let gs;
+	$(document).ready(function() {
+		setup();
 	});
-	
-	function plotBarGraph(){
-		marks = new Object();
-		marks.name = [];
-		marks.total = [];
-		for (let i=1; i < 11; i++) { 
-			marks.name.push($('#name' + i).html());
-			marks.total.push($('#total' + i).html());
-		}
-		drawGraph('bar', marks);
-	}
-	
-	function getClassMarks() {
-		$.ajax({
-			url: "/getClassMarks" + window.location.search.substr(0),
-			async: false,
-			success: function(response){ marks =  response; }
-		});
-	}
-	
-	getClassMarks();
-	
-	function plotGraph() {
-		drawGraph('line', marks, examParam);
-	}
-	plotGraph()
 </script>
 {% endblock %}

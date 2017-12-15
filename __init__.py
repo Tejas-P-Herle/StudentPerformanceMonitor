@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, 'C:\\Users\\Tejas. P. Herle\\Programming\\Web\\StudentPerformanceMonitor\\libs\\')
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
 from libs.library import *
 
 app = Flask(__name__)
@@ -9,7 +9,7 @@ SQL = SQLFuncs()
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return redirect("/leaderboard")
 
 @app.route('/login')
 def login():
@@ -40,14 +40,41 @@ def leaderboard():
                 stdntData.append([stats[0][i][j], i + 1, stats[1][i][j], stats[2][i], stats[3][i], stats[4][i]])
     return render_template('leaderboard.html', stdntData=stdntData + [exam])
 
-@app.route('/getClassMarks')
-def getClassMarks():
+@app.route('/getClassPercent')
+def getClassPercent():
     stndrd = request.args.get('stndrd')
     section = request.args.get('section')
     exam = request.args.get('exam')
     if exam in [None, 'All']: exam = ''
-    names, percents = Grade(stndrd, section).getClassMarks(exam)
+    names, percents = Grade(stndrd, section).getClassPercent(exam)
     return jsonify({'name': names, 'percent': percents})
+
+@app.route('/getClassPertile')
+def getClassPertile():
+    stndrd = request.args.get('stndrd')
+    section = request.args.get('section')
+    exam = request.args.get('exam')
+    if exam in [None, 'All']: exam = ''
+    names, pertiles = Grade(stndrd, section).getClassPertile(exam)
+    return jsonify({'name': names, 'pertile': pertiles})
+
+@app.route('/getClassPercentImpr')
+def getClassPercentImpr():
+    stndrd = request.args.get('stndrd')
+    section = request.args.get('section')
+    exam = request.args.get('exam')
+    if exam in [None, 'All']: exam = ''
+    names, percentImprs = Grade(stndrd, section).getClassPercentImpr(exam)
+    return jsonify({'name': names, 'percentImpr': percentImprs})
+
+@app.route('/getClassPertileImpr')
+def getClassPertileImpr():
+    stndrd = request.args.get('stndrd')
+    section = request.args.get('section')
+    exam = request.args.get('exam')
+    if exam in [None, 'All']: exam = ''
+    names, pertileImprs = Grade(stndrd, section).getClassPertileImpr(exam)
+    return jsonify({'name': names, 'pertileImpr': pertileImprs})
 
 @app.route('/getMarks')
 def getMarks():
@@ -77,6 +104,7 @@ def student():
     uid = request.args.get('uid')
     exam = request.args.get('exam')
     name = Student(uid).getName()
+    if exam in [None, 'All']: exam = ''
 
     chngPercent = chngPertile = 0
     exmObj = Exams(uid)
@@ -87,15 +115,25 @@ def student():
 
     exams = ['FA1', 'FA2', 'SA1', 'FA3', 'FA4', 'SA2']
 
+    prevPercents = []
+    prevPertiles = []
     if not exam in ['', 'FA1']:
         index = exams.index(exam)
-        prevPercent = exmObj.calcPercentage(exam)
-        currPercent = exmObj.calcPercentage(exams[index - 1])
-        chngPercent = round(prevPercent - currPercent, 2)
-        prevPertile = exmObj.calcPercentile(exam)
-        currPertile = exmObj.calcPercentile(exams[index - 1])
-        chngPertile = round(prevPertile - currPertile, 2)
-    return render_template('student.html', uid=uid, exam=exam, name=name, chngPercent=chngPercent, chngPertile=chngPertile, exmTotal=exmTotal)
+        currPercent = exmObj.calcPercentage(exam)
+        prevPercent = exmObj.calcPercentage(exams[index - 1])
+        chngPercent = round(currPercent - prevPercent, 2)
+        currPertile = exmObj.calcPercentile(exam)
+        prevPertile = exmObj.calcPercentile(exams[index - 1])
+        chngPertile = round(currPertile - prevPertile, 2)
+        for i in range(index - 1):
+            prevPercents.append(exmObj.calcPercentage(exams[i]))
+            prevPertiles.append(exmObj.calcPercentile(exams[i]))
+        prevPercents += [prevPercent, currPercent]
+        prevPertiles += [prevPertile, currPertile]
+    return render_template('student.html', uid=uid, exam=exam, name=name,
+                           chngPercent=chngPercent, chngPertile=chngPertile,
+                           exmTotal=exmTotal, prevPercents=prevPercents,
+                           prevPertiles=prevPertiles)
 
 if __name__ == '__main__':
     app.run('0.0.0.0', 5000, debug=True)

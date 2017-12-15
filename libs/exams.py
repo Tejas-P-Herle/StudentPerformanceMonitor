@@ -1,5 +1,5 @@
 from sql import SQLFuncs
-from leaderboard import getBest
+from leaderboard import getExmBest
 
 SQL = SQLFuncs()
 
@@ -75,7 +75,7 @@ class Exams(dict):
         grade, section = SQL.getClass(self['uid'])
 
         # Calculates the percentile and returns it
-        best = getBest(grade, section, exam)
+        best = getExmBest(grade, section, exam)
         if exam:
             return round((self[exam.upper()]['total'] / best) * 100, 2)
         return round((self['total'] / best) * 100, 2)

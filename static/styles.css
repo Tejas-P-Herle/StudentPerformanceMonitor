@@ -10,4 +10,161 @@
   width: 60px;
   height: 60px;
   animation: spin 2s linear infinite;
+  position: relative;
+}
+
+.graphCont {
+	padding: 10px;
+	border: thin solid;
+}
+
+#next {
+    right: 0;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 29px;
+    border-top-right-radius: 0px;
+    border-top-left-radius: 29px;
+}
+
+#previous {
+    left: 0;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 29px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 29px;
+}
+
+#dotCont {
+	margin: 10px;
+	text-align:center;
+}
+
+.graphBtn {
+    background-color: #fff;
+    border-bottom-color: #4285F4;
+    border-bottom-style: none;
+    border-bottom-width: 0px;
+    border-left-color: rgb(66, 133, 244);
+    border-left-style: none;
+    border-left-width: 0px;
+    border-right-color: rgb(66, 133, 244);
+    border-right-style: none;
+    border-right-width: 0px;
+    border-top-color: rgb(66, 133, 244);
+    border-top-style: none;
+    border-top-width: 0px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px 0px;
+    color: #a0a0a0;
+    cursor: pointer;
+    display: block;
+    font-size: 35px;
+    font-style: normal;
+    font-weight: normal;
+    height: 53px;
+    line-height: 56px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: -29px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    position: absolute;
+    text-align: center;
+    text-decoration: none;
+    top: 107%;
+    vertical-align: middle;
+    visibility: visible;
+    width: 33px;
+    z-index: 2;
+}
+
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.4s ease;
+}
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+
+
+#copyright {
+    position: absolute;
+	left: 0;
+	width: -webkit-fill-available;
+    text-align: center;
+	background-color: #3F51B5;
+	padding-bottom: 1%;
+	padding-top: 1%;
+	color: white;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+thead {
+	background-color: #dddddd;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+td>a {
+	color: #000080;
+    text-decoration: none;
+}
+
+.button--outline {
+    color: #1cb39b;
+    border: 2px solid #77D7C8;
+}
+
+.button {
+	color: #000080;
+    border: 2px solid #000080;
+    text-transform: uppercase;
+    display: inline-block;
+    font-size: 20px;
+	font-weight: bold;
+	line-height: 0px;
+    letter-spacing: 0.071em;
+    padding: 20px 46px;
+    border-radius: 40px;
+    white-space: nowrap;
+	cursor: pointer;
+}
+
+.button:hover {
+	background: #000080;
+	color: white;
+}
+
+.select {
+	border-radius: 10px;
+	outline: none;
+	position: relative;
+	left: 8px; 
+}
+
+.params {
+	font-size: 23px;
+	display: inline-flex;
+    width: 120pt;
 }

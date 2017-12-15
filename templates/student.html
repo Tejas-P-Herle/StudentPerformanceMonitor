@@ -1,60 +1,39 @@
 {% extends 'layout.html' %}
+{% block head %}
+	{{ super() }}
+	<script src="{{ url_for('static', filename='student.js') }}"></script>
+{% endblock %}
 {% block title %}Student{% endblock %}
 {% block body %}
-Student: <br>
-Name: {{ name }}<br>
-ID: {{ uid }}<br>
-<div id='exam'></div>
-<div id='exmTotal'>Exam Total: {{ exmTotal }}</div>
-<div id='chngPercent'>Change in Percentage: {{ chngPercent }}</div>
-<div id='chngPertile'>Change in Percentile: {{ chngPertile }}</div>
-<div id='graph_div' style="height: 500px;"><div>
+<div>Student</div>
+<table>
+<tr><td>Name</td><td>{{ name }}</td></tr>
+<tr><td>ID</td><td>{{ uid }}</td></tr>
+<tr><td>Exam</td><td><div id='exam'></div></td></tr>
+<tr><td>Exan Total</td><td><div id='exmTotal'>{{ exmTotal }}</div></td></tr>
+<tr><td>Change in Percentage</td><td><div id='chngPercent'>{{ chngPercent }}</div></td></tr>
+<tr><td>Change in Percentile</td><td><div id='chngPertile'>{{ chngPertile }}</div></td></tr>
+</table>
+<div class='graphCont'>
+	<div id='graphDiv' class='graph' style="height: 250px;"></div>
+</div>
+<div id='previous' class='graphBtn' onclick='gs.plusGraph(-1)'>&#10094;</div>
+<div id='next' class='graphBtn' onclick='gs.plusGraph(1)'>&#10095;</div>
+<div id='dotCont'>
+  <span class="dot" onclick="setGraph(0)"></span>
+  <span id='imprmntDot' class="dot" onclick="setGraph(1)"></span>
+</div>
 <script>
-	let mark;
-	let exams = false;
-
-	if ('{{ exam }}' == '') {
-		$('#exam').html('Exam: All');
-		exams = true;
-	}
-	else {
-		$('#exam').html('Exam: {{ exam }}');
-	}
-	if (parseFloat('{{ chngPercent }}') > 0) {
-		let text = $('#chngPercent').text()
-		$('#chngPercent').text(text.replace(': ', ': +'))
-	}
-	if (parseFloat('{{ chngPertile }}') > 0) {
-		let text = $('#chngPertile').text()
-		$('#chngPertile').text(text.replace(': ', ': +'))
-	}
-	
-	$.ajax({
-		url: "getMarks?uid={{ uid }}&exam={{ exam }}",
-		async: false,
-		success: function(result){
-			marks = result.total;
-			if ('{{ exam }}'[0] == 'S') {
-				marks[0] = marks[0] / 125 * 100;
-			}
-			if (exams) {
-				for (let i=0; i < 4; i++) {
-					marks[i] = marks[i] / 300 * 100
-				}
-				for (let i=4; i < 6; i++) {
-					marks[i] = marks[i] / 625 * 100
-				}
-			}
-			console.log(marks);
-			drawGraph('pie', marks, exams);
-		}
-	});
-	var resizeId;
-	$(window).resize(function() {
-		clearTimeout(resizeId);
-		resizeId = setTimeout(function(){
-			drawGraph('pie', marks, exams);
-		}, 49);
+	let gs = new GraphSwitcher();
+	$(document).ready(function() {
+		let htmlParams = new Object();
+		htmlParams.prevPercents = '{{ prevPercents }}';
+		htmlParams.prevPertiles = '{{ prevPertiles }}';
+		htmlParams.exam = '{{ exam }}';
+		htmlParams.uid = '{{ uid }}';
+		htmlParams.chngPercent = '{{ chngPercent }}';
+		htmlParams.chngPertile = '{{ chngPertile }}';
+		setup(htmlParams);
 	});
 </script>
 {% endblock %}

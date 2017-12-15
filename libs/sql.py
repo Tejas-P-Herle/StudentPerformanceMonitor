@@ -127,9 +127,11 @@ class SQLFuncs():
         return self.SQL.select(['uid', 'name'], 'credentials',
                                {'grade': grade, 'section': section})
 
-    def getUid(self, grade, section):
+    def getUids(self, grade, section):
         return self.SQL.select('uid', 'credentials',
                                {'grade': grade, 'section': section})
-
+    def getUid(self, name):
+        return self.SQL.select('uid', 'credentials', {'name': name})
+    
     def getName(self, uid):
         return self.SQL.select('name', 'credentials', {'uid': uid})[0][0]
