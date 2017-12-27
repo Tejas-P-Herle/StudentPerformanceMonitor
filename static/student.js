@@ -5,20 +5,38 @@ function setup(inParams) {
 }
 
 function main() {
-	let stdntMarks;
-	let curr;
 	let isExam = false;
 	let imprmnt = null;
 	let uid = htmlParams.uid;
 	let exam = htmlParams.exam;
-	let graphFuncs = [getStdntMarks, setImprmnt];
-	let currList = ['stdntMarks', 'imprmnt'];
-	gs.graphFuncs = graphFuncs;
-	gs.currList = currList;
-	let prevPercents = htmlParams.prevPercents;
-	let prevPertiles = htmlParams.prevPertiles;
+	$('#percent').html(htmlParams.totalPercent);
+	$('#pertile').html(htmlParams.totalPertile);
+
+	let exams = ['FA1', 'FA2', 'SA1', 'FA3', 'FA4', 'SA2'];
+	let gsTitleZero = (exam == '') ? "Student's Exams Performance" : "Student's Subject Strength";
+
+	gs.graphFuncs = [getBarStdntPercent, getStdntPosPercent, getStdntPosPertile, setImprmnt];
+	gs.currList = ['barStdntPercent', 'stdntPosPercent', 'stdntPosPertile', 'imprmnt'];
+	gs.currTitleList = [gsTitleZero, "Student's Relative Percent", "Student's Relative Percentile", "Student's Percentage and Percentile Improvement"];
+    gs.currTextList = htmlParams.card1Doc.replace(/&#34;/g, '"').replace(/&#39;/g, "'").split('.').slice(0, -1)
+
+	gs2.graphFuncs = [getStdntPosILan, getStdntPosIILan, getStdntPosIIILan, getStdntPosMaths, getStdntPosScience, getStdntPosSocial];
+	gs2.currList = ['stdntPosILan', 'stdntPosIILan', 'stdntPosIIILan', 'stdntPosMaths', 'stdntPosScience', 'stdntPosSocial'];
+	gs2.currTitleList = ["Student's I Language Performance", "Student's II Language Performance", "Student's III Language Performance",
+						 "Student's Maths Performance", "Student's Science Performance", "Student's Social Performance"];
+    gs2.currTextList = htmlParams.card2Doc.replace(/&#34;/g, '"').replace(/&#39;/g, "'").split('.').slice(0, -1)
+
 	let chngPercent = htmlParams.chngPercent;
 	let chngPertile = htmlParams.chngPertile;
+	let stdntPosPercent;
+	let stdntPosPertile;
+	let stdntPosSubj;
+	let currVar;
+	let stdntPos = {'name': ['Best', htmlParams.name, 'Average', 'Least']};
+
+	let prevPercents = htmlParams.prevPercents;
+	let prevPertiles = htmlParams.prevPertiles;
+	barStdntPercent = prevPercents;
 	prevPercents = prevPercents != '[]' 
 				   ? prevPercents.slice(1, -1).split(', ').map(parseFloat)
 				   : null;
@@ -32,7 +50,16 @@ function main() {
 	}
 	else {
 		$('#exam').html(exam);
+		$('.imprmntDot').remove();
+		gs2.currList = null;
+		gs2.graphFuncs = null;
+		gs2 = null;
+		gs.graphFuncs.pop();
+		gs.currList.pop();
+		gs.currTitleList.pop();
+        $('#graphEntity2').remove();
 	}
+
 	if (parseFloat(chngPercent) > 0) {
 		let text = $('#chngPercent').text()
 		$('#chngPercent').text('+' + text)
@@ -41,54 +68,112 @@ function main() {
 		let text = $('#chngPertile').text()
 		$('#chngPertile').text('+' + text)
 	}
-	function getStdntMarks(plot=true) {
-		if (!stdntMarks){
-			$.ajax({
-				url: 'getMarks?uid=' + uid + '&exam=' + exam,
-				async: false,
-				success: function(result){
-					stdntMarks = result.total;
-					if (isExam) {
-						for (let i=0; i < 4; i++) {
-							stdntMarks[i] = stdntMarks[i] / 300 * 100;
-						}
-						for (let i=4; i < 6; i++) {
-							stdntMarks[i] = stdntMarks[i] / 625 * 100;
-						}
-					}
-					else if (exam[0] == 'S') {
-						stdntMarks[0] = stdntMarks[0] / 125 * 100;
-					}
-				}
-			});
-		}
-		if (plot) {
-			drawGraph('bar', stdntMarks, !isExam);
-		}
+	
+	function loading(graphObj) {
+		setLoading(graphObj);
+		centerLoading('#' + graphObj);
+	}
+	
+	function plotBarGraph(curr, graphObj) {
+		if (!currVar) { return -1; }
+		gsObj = graphObj == 'graphDiv' ? gs : gs2;
+		gsObj.curr = curr;
+		drawGraph('bar', currVar, !isExam, false, graphObj);
+	}
+	
+	function plotLineGraph(curr, graphObj) {
+		if (!currVar) { return -1; }
+		gsObj = (graphObj == 'graphDiv') ? gs : gs2;
+		gsObj.curr = curr;
+		drawGraph('line', currVar, !isExam, false, graphObj);
 	}
 
-	if (!(prevPercents && prevPertiles)) {
-		$('#imprmntDot').remove();
-		$('#next').hide();
-		let graphIndex = gs.currList.indexOf('imprmnt');
-		graphFuncs.splice(graphIndex, 1);
-		gs.currList.splice(graphIndex, 1);
+	function ajaxFunc(url, callback) {
+	    $.ajax({
+	        url: url,
+	        success: function(response) { callback(response) }
+	    });
 	}
-	function setImprmnt() {
+	
+	function getBarStdntPercent(graphObj) {
+		loading(graphObj);
+		currVar = prevPercents;
+		plotBarGraph('stdntMarks', graphObj);
+	}
+
+	currListIndex = ['I_Lan', 'II_Lan', 'III_Lan', 'Maths', 'Science', 'Social'];
+
+	function plotStdntPos(graphObj, percent, pertile, subj) {
+	    if (!(percent || pertile || subj)) return -1;
+	    stdntPos.percent = percent;
+	    stdntPos.pertile = pertile;
+	    stdntPos.subj = subj;
+	    currVar = stdntPos;
+	    gsObj = (graphObj == 'graphDiv') ? gs : gs2;
+	    if (subj) currListVar = gsObj.currList[currListIndex.indexOf(subj)];
+	    else currListVar = percent ? 'stdntPosPercent' : 'stdntPosPertile';
+	    plotLineGraph(currListVar, graphObj)
+	}
+
+	function getStdntPosPercent(graphObj) {
+		if (graphObj) loading(graphObj);
+		function plot() { if (graphObj) plotStdntPos(graphObj, stdntPosPercent, null, null); }
+		if (graphObj && stdntPosPercent) return plot();
+        ajaxFunc('/getStdntPosPercent' + location.search.substr(0), function(response) {
+            stdntPosPercent = response.percent;
+            plot();
+        });
+	}
+
+	function getStdntPosPertile(graphObj) {
+		if (graphObj) loading(graphObj);
+		function plot() { if (graphObj) plotStdntPos(graphObj, null, stdntPosPertile, null); }
+		if (graphObj && stdntPosPertile) return plot();
+		ajaxFunc('/getStdntPosPertile' + location.search.substr(0), function(response) {
+			stdntPosPertile = response.pertile;
+		    plot();
+		});
+	}
+
+	function getStdntPosSubj(callback) {
+		if (!stdntPosSubj) {
+		    ajaxFunc('/getStdntPosSubj' + location.search.substr(0), function(response) {
+					stdntPosSubj = response;
+					callback();
+			});
+		}
+	}
+	
+	function stdntPosSubjPlot(graphObj, subj) {
+	    loading(graphObj);
+	    function plot() { if (graphObj) plotStdntPos(graphObj, stdntPosSubj[subj], null, subj) }
+		if (graphObj && stdntPosSubj) return plot();
+		getStdntPosSubj(plot);
+	}
+
+	function getStdntPosILan(graphObj) { stdntPosSubjPlot(graphObj, 'I_Lan') }
+	function getStdntPosIILan(graphObj) { stdntPosSubjPlot(graphObj, 'II_Lan') }
+	function getStdntPosIIILan(graphObj) { stdntPosSubjPlot(graphObj, 'III_Lan') }
+	function getStdntPosMaths(graphObj) { stdntPosSubjPlot(graphObj, 'Maths') }
+	function getStdntPosScience(graphObj) { stdntPosSubjPlot(graphObj, 'Science') }
+	function getStdntPosSocial(graphObj) { stdntPosSubjPlot(graphObj, 'Social') }
+
+	function setImprmnt(graphObj) {
+		loading(graphObj);
 		if (prevPercents && prevPertiles) {
 			imprmnt = new Object();
-			imprmnt.percents = prevPercents;
-			imprmnt.pertiles = prevPertiles;
-			drawGraph('line', imprmnt);
+			imprmnt.percent = prevPercents;
+			imprmnt.pertile = prevPertiles;
+			currVar = imprmnt;
+			plotLineGraph(currVar, graphObj);
 		}
-		curr = 'imprmnt';
 	}
 
 
 	function resized() {
-		drawGraph('bar', stdntMarks, !isExam);
-		if (imprmnt) {
-			drawGraph('line', imprmnt);
+		gs.replot();
+		if (gs2) {
+		    gs2.replot();
 		}
 	}
 
@@ -98,4 +183,9 @@ function main() {
 		resizeId = setTimeout(resized, 49);
 	});
 	gs.setup();
+	getStdntPosPertile();
+	getStdntPosPercent();
+	if (gs2) {
+	    gs2.setup();
+	}
 }

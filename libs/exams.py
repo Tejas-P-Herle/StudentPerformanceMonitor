@@ -1,7 +1,11 @@
-from sql import SQLFuncs
-from leaderboard import getExmBest
+from libs.sql import SQLFuncs
+from libs.leaderboard import getExmBest
+from libs.restrictIO import print_
+print_('File-exams.py Importing-Complete')
+print_('File-exams.py Starting Setup')
 
 SQL = SQLFuncs()
+
 
 class Exams(dict):
     def __init__(self, uid):
@@ -79,3 +83,6 @@ class Exams(dict):
         if exam:
             return round((self[exam.upper()]['total'] / best) * 100, 2)
         return round((self['total'] / best) * 100, 2)
+
+
+print_('File-exams.py Setup-Complete')

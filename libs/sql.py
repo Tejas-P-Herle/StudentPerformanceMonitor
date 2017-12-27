@@ -15,7 +15,9 @@ Description: This file contains basic functions with respect to marks and
                     
 """
 import pyodbc
-import sys
+from libs.restrictIO import print_
+print_('File-sql.py Importing-Complete')
+print_('File-sql.py Starting Setup')
 
 class SQLCnxn():
     def __init__(self):
@@ -135,3 +137,6 @@ class SQLFuncs():
     
     def getName(self, uid):
         return self.SQL.select('name', 'credentials', {'uid': uid})[0][0]
+
+
+print_('File-sql.py Setup-Complete')

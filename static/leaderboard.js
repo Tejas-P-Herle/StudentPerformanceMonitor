@@ -1,21 +1,29 @@
-function setup() {
+function setup(htmlParams) {
 	$('#previous').hide();
-	main();
+	main(htmlParams);
 }
 
-function main(){
+function main(htmlParams){
 	let marks;
 	let classPercent;
 	let classPertile;
 	let classPercentImpr;
 	let classPertileImpr;
-	let curr;
+	let currVar;
 	let examParam = window.location.search.substr(1).split('&');
 	examParam = examParam.find(function(param) { return param.slice(0, 4) == 'exam' });
 	examParam = examParam ? examParam.replace('exam=', '') : null;
 	examParam = examParam == 'All' ? null : examParam;
 
-	leaderboardOptions('options');
+    gs.graphFuncs = [getClassPercent, getClassPertile, getClassPercentImpr, getClassPertileImpr];
+	gs.currList = ['percent', 'pertile', 'percentImpr', 'pertileImpr'];
+	gs.currTitleList = ['Class Performance - Percent', 'Class Performance - Percentile',
+	                    'Class Performance - Percent Improvement', 'Class Performance - Percentile Improvement'];
+	gs.currTextList = htmlParams.card1Doc.replace(/&#34;/g, '"').replace(/&#39;/g, "'").split('.').slice(0, -1)
+	let options = new Options('options', 'leaderboard');
+	options.setGradeOptions();
+	options.setExamOptions();
+	options.renderSubmitButton();
 	var resizeId;
 	$(window).resize(function() {
 		clearTimeout(resizeId);
@@ -23,68 +31,73 @@ function main(){
 	});
 	
 	function loading() {
-		setLoading('graphDiv');
+		setLoading();
 		centerLoading();
 	}
 	
-	function getClassPercent(plot=true) {	
-		loading();
-		if (!classPercent) {
-			$.ajax({
-				url: "/getClassPercent" + window.location.search.substr(0),
-				async: false,
-				success: function(response){ classPercent = response; }
-			});
-		}
-		if (plot) { 
-			curr = 'percent';
-			drawGraph('line', classPercent, isSubj=examParam); 
-		}
+	function plotLineGraph(graphObj, curr) {
+		if (!currVar) { return -1; }
+		gs.curr = curr;
+		drawGraph('line', currVar, examParam, true, graphObj);
 	}
 
-	function getClassPertile(plot=true) {
-		loading();
-		if (!classPertile) {
-			$.ajax({
-				url: "/getClassPertile" + window.location.search.substr(0),
-				async: false,
-				success: function(response){ classPertile = response; }
-			});
-		} 
-		if (plot) { 
-			curr = 'pertile';
-			drawGraph('line', classPertile, isSubj=examParam); 
-		}
+	function plotGraph(graphObj, currIn, currVarIn) {
+	    if (graphObj) {
+	        currVar = currVarIn;
+	        plotLineGraph(graphObj, currIn);
+	    }
 	}
 
-	function getClassPercentImpr(plot=true) {
-		loading();
-		if (!classPercentImpr) {
-			$.ajax({
-				url: "/getClassPercentImpr" + window.location.search.substr(0),
-				async: false,
-				success: function(response){ classPercentImpr = response; }
-			});
-		}
-		if (plot) { 
-			curr = 'percentImpr'; 
-			drawGraph('line', classPercentImpr, isSubj=examParam); 
-		}
+	function ajaxFunc(url, callback) {
+	    $.ajax({
+            url: url,
+            success: function (response) { callback(response); }
+        });
 	}
 
-	function getClassPertileImpr(plot=true) {
+	function plotClassMarks(graphObj, param, value) {
+	    currVar = value;
+	    plotLineGraph(graphObj, param);
+	}
+	
+	function getClassPercent(graphObj) {
 		loading();
-		if (!classPertileImpr) {
-			$.ajax({
-				url: "/getClassPertileImpr" + window.location.search.substr(0),
-				async: false,
-				success: function(response){ classPertileImpr = response; }
-			});
-		}
-		if (plot) { 
-			curr = 'pertileImpr';
-			drawGraph('line', classPertileImpr, isSubj=examParam);
-		}
+		function plot() { if (graphObj) plotClassMarks(graphObj, 'percent', classPercent); }
+		if (classPercent) return plot();
+        ajaxFunc("/getClassPercent" + window.location.search.substr(0), function(response){
+            classPercent = response;
+            plot();
+        });
+	}
+
+	function getClassPertile(graphObj) {
+		loading();
+		function plot() { if (graphObj) plotClassMarks(graphObj, 'pertile', classPertile); }
+		if (classPertile) return plot();
+        ajaxFunc("/getClassPertile" + window.location.search.substr(0), function(response){
+            classPertile = response;
+            plot();
+        });
+	}
+
+	function getClassPercentImpr(graphObj) {
+		loading();
+		function plot() { if (graphObj) plotClassMarks(graphObj, 'percentImpr', classPercentImpr); }
+		if (classPercentImpr) return plot();
+        ajaxFunc("/getClassPercentImpr" + window.location.search.substr(0), function(response){
+            classPercentImpr = response;
+            plot();
+        });
+	}
+
+	function getClassPertileImpr(graphObj) {
+		loading();
+		function plot() { if (graphObj) plotClassMarks(graphObj, 'pertileImpr', classPertileImpr); }
+		if (classPertileImpr) return plot();
+        ajaxFunc("/getClassPertileImpr" + window.location.search.substr(0), function(response){
+            classPertileImpr = response;
+            plot();
+        });
 	}
 
 	if (examParam == 'FA1') {
@@ -99,18 +112,13 @@ function main(){
 	function resized () {
 		gs.centerBtns();
 		gs.replot();
-		if ($('#loading')) {
-			centerLoading();
-		}
+		centerLoading();
 	}
 	
-	getClassPertile(false);
+	getClassPertile('');
 	if (examParam != 'FA1') {
-		getClassPercentImpr(false);
-		getClassPertileImpr(false);
+		getClassPercentImpr('');
+		getClassPertileImpr('');
 	}
-	gs = new GraphSwitcher();
-	gs.graphFuncs = [getClassPercent, getClassPertile, getClassPercentImpr, getClassPertileImpr];
-	gs.currList = ['percent', 'pertile', 'percentImpr', 'pertileImpr'];
 	gs.setup();
 }

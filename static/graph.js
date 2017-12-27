@@ -1,32 +1,28 @@
 let subjs = ['I_Language', 'II_Language', 'III_Language', 'Maths', 'Science', 'Social'];
 let exams = ['FA1', 'FA2', 'SA1', 'FA3', 'FA4', 'SA2'];
-
-function setLoading(graphObj) {
-	$('#' + graphObj).html('<div id="loading"></div>');
+let testElem;
+function setLoading(graphObj='graphDiv') {
+    let id = (graphObj == 'graphDiv') ? 'loading' : 'loading2';
+	$('#' + graphObj).html('<div id="' + id + '" class="loading"></div>');
 }
 
-function centerLoading(graphObj='graphDiv') {
-	$('#loading').css('top', ($('#' + graphObj).height() / 2) - 46);
-	$('#loading').css('left', ($('#' + graphObj).width() / 2) - 46);
+function centerLoading(graphObj='#graphDiv') {
+    let loading = (graphObj == '#graphDiv') ? '#loading' : '#loading2';
+	$(loading).css('top', ($(graphObj).height() / 2) - 46);
+	$(loading).css('left', ($(graphObj).width() / 2) - 46);
 }
 
-function drawGraph(graph, marks, isSubj=false, graphObj='graphDiv', options=null) {
+function drawGraph(graph, marks, isSubj=false, highLightLine=false, graphObj='graphDiv') {
 	if (graph == "bar") {
 		google.charts.load("current", {packages:["bar"]});
 		google.charts.setOnLoadCallback(function() {
-			title='';
-			barGraph(barMTDT(marks, isSubj), graphObj, title, options);
-		});
-	} else if (graph == "pie") {
-		google.charts.load("current", {packages:["corechart"]});
-		google.charts.setOnLoadCallback(function() {
-			pieGraph(pieMTDT(marks, isSubj), graphObj, options);
+			barGraph(barMTDT(marks, isSubj), graphObj);
 		});
 	} else if (graph == "line") {
 		google.charts.load('current', {'packages':['corechart']});
 		google.charts.setOnLoadCallback(function() {
 			data = lineMTDT(marks, isSubj);
-			lineGraph(data[0], graphObj, data[1], options);
+			lineGraph(data, graphObj, highLightLine);
 		});
 	}
 }
@@ -67,15 +63,23 @@ function lineMTDT(marks, isSubj) {
 		for (let i=0; i < marks.name.length; i++) {
 			data.addColumn('number', marks.name[i]);
 		}
-		data.addRows(6);
-		if (marks.percent) {
+		if (!marks.subj) {
+			data.addRows(6); // Change 6 to exams.length
+		}
+		if (marks.subj) {
+			for (let i=0; i < marks.percent.length; i++) {
+				data.addRow([exams[i]].concat(marks.percent[i]));
+			}
+			return data
+		}
+		else if (marks.percent) {
 			for (let j=0; j < 6; j++) {
 				data.setCell(j, 0, params[j]);
 				for (let i=0; i < marks.name.length; i++) {
 					data.setCell(j, i + 1, marks.percent[i][j]);
 				}
 			}
-			return [data, 'Class Performance-Percentage'];
+			return data;
 		}
 		else if (marks.pertile) {
 			for (let j=0; j < 6; j++) {
@@ -84,7 +88,7 @@ function lineMTDT(marks, isSubj) {
 					data.setCell(j, i + 1, marks.pertile[i][j]);
 				}
 			}
-			return [data, 'Class Performance-Pertcentile'];
+			return data;
 		}
 		else if (marks.percentImpr) {
 			for (let j=0; j < 6; j++) {
@@ -93,7 +97,7 @@ function lineMTDT(marks, isSubj) {
 					data.setCell(j, i + 1, marks.percentImpr[i][j]);
 				}
 			}
-			return [data, 'Class Performance-Percentage Improvement'];
+			return data;
 		}
 		else if (marks.pertileImpr) {
 			for (let j=0; j < 6; j++) {
@@ -102,17 +106,17 @@ function lineMTDT(marks, isSubj) {
 					data.setCell(j, i + 1, marks.pertileImpr[i][j]);
 				}
 			}
-			return [data, 'Class Performance-Percentile Improvement'];
+			return data;
 		}
 	}
 	data.addColumn('string', 'Exams');
 	data.addColumn('number', 'Percentage');
 	data.addColumn('number', 'Percentile');
 	
-	for (let i=0; i < marks.percents.length; i++) {
-		data.addRow([exams[i], marks.percents[i], marks.pertiles[i]]);
+	for (let i=0; i < marks.percent.length; i++) {
+		data.addRow([exams[i], marks.percent[i], marks.pertile[i]]);
 	}
-	return [data, 'Student Performance'];
+	return data;
 }
 
 function barMTDT(marks, isSubj) {
@@ -179,37 +183,75 @@ function barMTDT(marks, isSubj) {
 	}
 }
 
-function pieGraph(data, graphObj, options) {
-	if (!options) {
-		 options = {
-			title: 'Wheel of Performance',
-		};
-	}
-	var chart = new google.visualization.PieChart(document.getElementById(graphObj));
-	chart.draw(data, options);
-}
-function barGraph(data, graphObj, title, options, subtitle='') {
-	if (!options) {
-		options = {
-			hAxis: {
-				slantedText:true,
-				slantedTextAngle:90,
-			},
-			legend: {position: 'none'}
-		};	
-	}
+function barGraph(data, graphObj, options) {
+	options = {
+		hAxis: {
+			slantedText:true,
+			slantedTextAngle:90,
+		},
+		legend: {position: 'none'}
+	};	
 	var chart = new google.charts.Bar(document.getElementById(graphObj));
 	chart.draw(data, google.charts.Bar.convertOptions(options));
 }
 
-function lineGraph(data, graphObj, title, options) {
-    if (!options) {
-		options = {
-		title: title,
+function lineGraph(data, graphObj, highLightLine) {
+    let graph = (graphObj == 'graphDiv') ? 'graphEntity1' : 'graphEntity2';
+	let options = {
 		curveType: 'function',
-		legend: { position: 'bottom' }
-		};
+		legend: {'position': 'bottom'},
+		chartArea: {width: $('#' + graph).width() - 100, left:50, top:50},
+		series: {},
+	};
+	for (let i=0; i < data.ng.length - 1; i++) {
+		options.series[i] = {lineWidth: 2};
 	}
-	var chart = new google.visualization.LineChart(document.getElementById(graphObj));
-	chart.draw(data, options);
+
+	if ((data.getNumberOfColumns() - 1) == 4) {
+		options.colors = ['#109618', '#FF9900', '#3366CC', '#DC3912'];
+	}
+	let chart = new google.visualization.LineChart(document.getElementById(graphObj));
+	if (highLightLine) {
+	    let prevSel = null;
+        let selLineWidth = '7';
+        let gElemIndex;
+        let lines;
+        let linesParent;
+        google.visualization.events.addListener(chart, 'select', function() {
+            let sel = chart.getSelection();
+            if (sel.length > 0) {
+                sel = sel[0];
+                if (sel.row == null) {
+                    chart.setSelection();
+                    if (prevSel != null) {
+                        lines[lines.length - 1].remove();
+                    }
+                    if (prevSel != sel.column - 1) {
+                        let temp = lines[sel.column - 1].children[3];
+                        linesParent.append(temp);
+                        lines[lines.length - 1].attributes[2].nodeValue = selLineWidth;
+                        prevSel = sel.column - 1;
+                    } else { prevSel = null; }
+                }
+                else if (prevSel != null) {
+                    lines[lines.length - 1].remove();
+                    prevSel = null;
+                }
+            }
+        });
+
+        chart.draw(data, options);
+        let gLen = $('g').length;
+        for (let i=0; i<gLen; i++) {
+            if ($('g')[i].childNodes.length == data.getNumberOfColumns() - 1) {
+                lines = $('g')[i].children;
+                testElem = lines;
+                if ($(lines).parents('div#' + graphObj).length == 0) { continue; }
+                if ($(lines).has('rect').length == 1) { continue; }
+                linesParent = $('g')[i];
+                break;
+            }
+        }
+    }
+    else { chart.draw(data, options); }
 }

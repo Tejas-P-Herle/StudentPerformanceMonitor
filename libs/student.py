@@ -1,5 +1,8 @@
-from sql import SQLFuncs
-from exams import Exams
+from libs.sql import SQLFuncs
+from libs.exams import Exams
+from libs.restrictIO import print_
+print_('File-student.py Importing-Complete')
+print_('File-student.py Starting Setup')
 
 SQL = SQLFuncs()
 
@@ -31,3 +34,6 @@ class Student(dict):
     def getClass(self):
         grade, stdntClass = SQL.getClass(self.uid)
         return grade + stdntClass
+
+
+print_('File-student.py Setup-Complete')

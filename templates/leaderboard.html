@@ -1,50 +1,55 @@
 {% extends "layout.html" %}
 {% block head %}
-	{{ super() }}
-	<script src="{{ url_for('static', filename='leaderboard.js') }}"></script>
+{{ super() }}
+<script src="{{ url_for('static', filename='leaderboard.js') }}"></script>
 {% endblock %}
-{% block title%}Marks Analyzer: Leaderboard{% endblock %}
-{% block bodyStyle %}style="margin: 25px;"{% endblock %}
+{% block title%}SPM: Leaderboard{% endblock %}
+{% block bodyClass %}"container"{% endblock %}
 {% block body %}
 {{ super() }}
-<div id='pageTitle'><h1>Leaderboard</h1></div>
+<div><h1 class="display-4">Leaderboard</h1></div>
 <div id='options'></div>
-<table>
-  <thead>
-	<td>Rank</td>
-	<td>Names</td>
-	<td>Marks</td>
-	<td>Percentage</td>
-	<td>Percentile</td>
-  </thead>
-  {% for data in stdntData[:-1] %}
-  <tr>
-	<td>{{ data[1] }}.</td>
-	<td id='name{{ data[1] }}'>{{ data[2] }}</td>
-	<td id='total{{ data[1] }}'>{{ data[3] }}</td>
-	<td>{{ data[4] }}</td>
-	<td>{{ data[5] }}</td>
-	<td><a href='/student?uid={{ data[0] }}&exam={{ stdntData[-1] }}'>
-		View Student</a></td>
-  </tr>
-  {% endfor %}
+<table class='table'>
+    <thead class='thead-dark'>
+    <th>Rank</th>
+    <th>Names</th>
+    <th>Marks</th>
+    <th>PCT</th>
+    <th>PCTL</th>
+    </thead>
+    {% for data in stdntData[:-1] %}
+    <tr>
+        <td>{{ data[1] }}.</td>
+        <td id='name{{ data[1] }}'><a href='/student?uid={{ data[0] }}&exam={{ stdntData[-1] }}'>
+            {{ data[2] }}</a></td>
+        <td id='total{{ data[1] }}'>{{ data[3] }}</td>
+        <td>{{ data[4] }}</td>
+        <td>{{ data[5] }}</td>
+    </tr>
+    {% endfor %}
 </table>
-<!-- Ratio 10:7 -->
-<div class='graphCont' style='padding: 0px;'>
-<div id="graphDiv" style="height: 500px;"></div>
-</div>
-<div id='previous' class='graphBtn' onclick='gs.plusGraph(-1)'>&#10094;</div>
-<div id='next' class='graphBtn' onclick='gs.plusGraph(1)'>&#10095;</div>
-<div id='dotCont'>
-  <span class="dot" onclick="gs.setGraph(0)"></span>
-  <span class="dot" onclick="gs.setGraph(1)"></span> 
-  <span class="dot dotImpr" onclick="gs.setGraph(2)"></span> 
-  <span class="dot dotImpr" onclick="gs.setGraph(3)"></span>  
+<div id="graphEntity1">
+    <div id='graphCont1' class="graphCont card" style='padding: 0px;'>
+        <div id="graphDiv" class="card-img-top" style="height: 450px;"></div>
+        <div class="card-body">
+            <h4 id='card-title1' class="card-title"></h4>
+            <p id="card-text1" class="card-text"></p>
+        </div>
+    </div>
+    <div class='graphBtn previous btnClass1' onclick='gs.plusGraph(-1)'>&#10094;</div>
+    <div class='graphBtn next btnClass1' onclick='gs.plusGraph(1)'>&#10095;</div>
+    <div class='dotCont'>
+        <span class="dot dotClass1" onclick="gs.setGraph(0)"></span>
+        <span class="dot dotClass1" onclick="gs.setGraph(1)"></span>
+        <span class="dot dotClass1 dotImpr" onclick="gs.setGraph(2)"></span>
+        <span class="dot dotClass1 dotImpr" onclick="gs.setGraph(3)"></span>
+    </div>
 </div>
 <script>
-	let gs;
+	let gs = new GraphSwitcher();
 	$(document).ready(function() {
-		setup();
+		setup({'card1Doc': '{{ card1Doc }}'});
 	});
+
 </script>
 {% endblock %}

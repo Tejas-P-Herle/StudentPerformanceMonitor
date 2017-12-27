@@ -1,39 +1,109 @@
 {% extends 'layout.html' %}
 {% block head %}
-	{{ super() }}
-	<script src="{{ url_for('static', filename='student.js') }}"></script>
+{{ super() }}
+<script src="{{ url_for('static', filename='student.js') }}"></script>
 {% endblock %}
-{% block title %}Student{% endblock %}
+{% block title %}SPM: Student{% endblock %}
+{% block bodyClass %}"container"{% endblock %}
 {% block body %}
-<div>Student</div>
-<table>
-<tr><td>Name</td><td>{{ name }}</td></tr>
-<tr><td>ID</td><td>{{ uid }}</td></tr>
-<tr><td>Exam</td><td><div id='exam'></div></td></tr>
-<tr><td>Exan Total</td><td><div id='exmTotal'>{{ exmTotal }}</div></td></tr>
-<tr><td>Change in Percentage</td><td><div id='chngPercent'>{{ chngPercent }}</div></td></tr>
-<tr><td>Change in Percentile</td><td><div id='chngPertile'>{{ chngPertile }}</div></td></tr>
+<div><h1 class="display-4">Student</h1></div>
+<table class="table">
+    <thead class="thead-dark">
+    <th>Data Field</th>
+    <th>Value</th>
+    </thead>
+    <tr>
+        <td>Name</td>
+        <td>{{ name }}</td>
+    </tr>
+    <tr>
+        <td>ID</td>
+        <td>{{ uid }}</td>
+    </tr>
+    <tr>
+        <td>Exam</td>
+        <td>
+            <div id='exam'></div>
+        </td>
+    </tr>
+    <tr>
+        <td>Total</td>
+        <td>
+            <div id='exmTotal'>{{ exmTotal }}</div>
+        </td>
+    </tr>
+    <tr>
+        <td>Percentage</td>
+        <td><div id='percent'>{{ percent }}</div></td>
+    </tr>
+    <tr>
+        <td>Percentile</td>
+        <td><div id='pertile'>{{ pertile }}</div></td>
+    </tr>
+    <tr>
+        <td>Change in Percentage</td>
+        <td>
+            <div id='chngPercent'>{{ chngPercent }}</div>
+        </td>
+    </tr>
+    <tr>
+        <td>Change in Percentile</td>
+        <td>
+            <div id='chngPertile'>{{ chngPertile }}</div>
+        </td>
+    </tr>
 </table>
-<div class='graphCont'>
-	<div id='graphDiv' class='graph' style="height: 250px;"></div>
+<div id='graphEntity1' class='graphEntity'>
+    <div id='graphTitle'><h4>Basic Graphs</h4></div>
+    <div id='graphCont1' class='graphCont card'>
+        <div id='graphDiv' class="card-img-top" style="height: 250px;"></div>
+        <div class="card-body">
+            <h4 id='card-title1' class="card-title"></h4>
+            <p id="card-text1" class="card-text"></p>
+        </div>
+    </div>
+    <div id='previous1' class='graphBtn previous btnClass1' onclick='gs.plusGraph(-1)'>&#10094;</div>
+    <div id='next1' class='graphBtn next btnClass1' onclick='gs.plusGraph(1)'>&#10095;</div>
+    <div class='dotCont'>
+        <span class="dot dotClass1" onclick="gs.setGraph(0)"></span>
+        <span class="dot dotClass1" onclick="gs.setGraph(1)"></span>
+        <span class="dot dotClass1" onclick="gs.setGraph(2)"></span>
+        <span class="dot dotClass1 imprmntDot" onclick="gs.setGraph(3)"></span>
+    </div>
 </div>
-<div id='previous' class='graphBtn' onclick='gs.plusGraph(-1)'>&#10094;</div>
-<div id='next' class='graphBtn' onclick='gs.plusGraph(1)'>&#10095;</div>
-<div id='dotCont'>
-  <span class="dot" onclick="setGraph(0)"></span>
-  <span id='imprmntDot' class="dot" onclick="setGraph(1)"></span>
+<div id='graphEntity2' class='graphEntity'>
+    <div id='graphCont2' class='graphCont card'>
+        <div id='graphDiv2' class="card-img-top" style="height: 250px;"></div>
+        <div class="card-body">
+            <h4 id='card-title2' class="card-title"></h4>
+            <p id="card-text2" class="card-text"></p>
+        </div>
+    </div>
+    <div id='previous2' class='graphBtn previous btnClass2' onclick='gs2.plusGraph(-1)'>&#10094;</div>
+    <div id='next2' class='graphBtn next btnClass2' onclick='gs2.plusGraph(1)'>&#10095;</div>
+    <div class='dotCont'>
+        <span class="dot dotClass2 imprmntDot" onclick="gs2.setGraph(0)"></span>
+        <span class="dot dotClass2 imprmntDot" onclick="gs2.setGraph(1)"></span>
+        <span class="dot dotClass2 imprmntDot" onclick="gs2.setGraph(2)"></span>
+        <span class="dot dotClass2 imprmntDot" onclick="gs2.setGraph(3)"></span>
+        <span class="dot dotClass2 imprmntDot" onclick="gs2.setGraph(4)"></span>
+        <span class="dot dotClass2 imprmntDot" onclick="gs2.setGraph(5)"></span>
+    </div>
 </div>
 <script>
 	let gs = new GraphSwitcher();
+	let gs2 = new GraphSwitcher('graphDiv2', '2');
 	$(document).ready(function() {
-		let htmlParams = new Object();
-		htmlParams.prevPercents = '{{ prevPercents }}';
-		htmlParams.prevPertiles = '{{ prevPertiles }}';
-		htmlParams.exam = '{{ exam }}';
-		htmlParams.uid = '{{ uid }}';
-		htmlParams.chngPercent = '{{ chngPercent }}';
-		htmlParams.chngPertile = '{{ chngPertile }}';
+		let htmlParams = {
+            'name': '{{ name }}', 'prevPercents': '{{ prevPercents }}',
+            'prevPertiles': '{{ prevPertiles }}', 'exam': '{{ exam }}',
+            'uid': '{{ uid }}', 'chngPercent': '{{ chngPercent }}',
+            'chngPertile': '{{ chngPertile }}', 'totalPercent': '{{ totalPercent }}',
+            'totalPertile': '{{ totalPertile }}', 'card1Doc': '{{ card1Doc }}',
+            'card2Doc': '{{ card2Doc }}'
+		}
 		setup(htmlParams);
 	});
+
 </script>
 {% endblock %}

@@ -3,7 +3,27 @@
   100% { transform: rotate(360deg); }
 }
 
-#loading {
+.navbar-nav li a:hover, .navbar-nav li.active a {
+  color: #343a40 !important;
+  background-color: #fff !important;
+}
+
+.navbar li a, .navbar .navbar-brand {
+  color: #fff !important;
+}
+
+.navbar {
+  margin-bottom: 0;
+  z-index: 9999;
+  border: 0;
+  font-size: 12px !important;
+  line-height: 1.42857143 !important;
+  letter-spacing: 3px;
+  border-radius: 0;
+  font-family: Montserrat, sans-serif;
+}
+
+.loading {
   border: 16px solid #f3f3f3;
   border-radius: 50%;
   border-top: 16px solid #3498db;
@@ -13,12 +33,11 @@
   position: relative;
 }
 
-.graphCont {
-	padding: 10px;
-	border: thin solid;
+.card-body {
+    border-top: 1px solid rgba(0,0,0,.125);
 }
 
-#next {
+.next {
     right: 0;
     border-bottom-right-radius: 0px;
     border-bottom-left-radius: 29px;
@@ -26,7 +45,7 @@
     border-top-left-radius: 29px;
 }
 
-#previous {
+.previous {
     left: 0;
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 29px;
@@ -34,9 +53,18 @@
     border-top-right-radius: 29px;
 }
 
-#dotCont {
+.dotCont {
 	margin: 10px;
 	text-align:center;
+}
+body {margin:0;}
+
+.fill-height {
+	height: 100%;
+}
+
+.fill-width {
+	width: 100%;
 }
 
 .graphBtn {
@@ -107,28 +135,11 @@
 	color: white;
 }
 
-table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
+.select {
+	padding: 9px 0px;
     width: 100%;
-}
-
-td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-}
-thead {
-	background-color: #dddddd;
-}
-
-tr:nth-child(even) {
-    background-color: #dddddd;
-}
-
-td>a {
-	color: #000080;
-    text-decoration: none;
+    border: none;
+    border-bottom: 1px solid #ccc;
 }
 
 .button--outline {
@@ -156,14 +167,16 @@ td>a {
 	color: white;
 }
 
-.select {
-	border-radius: 10px;
-	outline: none;
-	position: relative;
-	left: 8px; 
+.optionsCont {
+	display: inline-flex;
 }
 
-.params {
+.optionsBtn {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.optionsTitle {
 	font-size: 23px;
 	display: inline-flex;
     width: 120pt;

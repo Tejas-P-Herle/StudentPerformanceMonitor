@@ -1,0 +1,4 @@
+Each student's performance based on percentage of a given class in a given exam.
+Each student's performance based on percentile of a given class in a given exam.
+Each student's improvement based on percentage from the previous exam in each subject of a given class in a given exam.
+Each student's improvement based on percenile from the previous exam in each subject of a given class in a given exam.

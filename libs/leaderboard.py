@@ -1,4 +1,7 @@
-from sql import SQLFuncs
+from libs.sql import SQLFuncs
+from libs.restrictIO import print_
+print_('File-leaderboard.py Importing-Complete')
+print_('File-leaderboard.py Starting Setup')
 
 SQL = SQLFuncs()
 exams = ['FA1', 'FA2', 'FA3', 'FA4', 'SA1', 'SA2']
@@ -28,10 +31,12 @@ def getLeaderboard(grade, section, exam='', ranks=10):
             else:
                 temp.append(uid)
                 totals.update({total: temp})
-
-    for ttl in sorted(totals.keys())[:-(ranks + 1):-1]:
+    if ranks == True and type(ranks) == bool:
+        ranks = len(stdntData)
+    sortedTotals = sorted(totals.keys())[:-(ranks + 1):-1]
+    for ttl in sortedTotals:
         leaderboard.append(totals[ttl])
-    return leaderboard
+    return leaderboard, sortedTotals
 
 def getSubjLeaderboard(grade, section, exam, subj, ranks=10):
     totals = {}
@@ -49,18 +54,20 @@ def getSubjLeaderboard(grade, section, exam, subj, ranks=10):
             else:
                 temp.append(uid)
                 totals.update({total: temp})
-    for ttl in sorted(totals.keys())[:-(ranks + 1):-1]:
+    if ranks == True and type(ranks) == bool:
+        ranks = len(stdntData)
+    sortedTotals = sorted(totals.keys())[:-(ranks + 1):-1]
+    for ttl in sortedTotals:
         leaderboard.append(totals[ttl])
-    return leaderboard
+    return leaderboard, sortedTotals
                 
 def getSubjTotal(uid, exam, subj):
     marks = SQL.getMarks(uid, exam)
     return sum(marks[subjs.index(subj) * 2: subjs.index(subj) * 2 + 2])
 
 def getSubjBest(grade, section, exam, subj):
-    best = getSubjLeaderboard(grade, section, exam, subj, 1)[0]
-    uid = best[0] if type(best) == list else best
-    return getSubjTotal(uid, exam, subj)
+    best = getSubjLeaderboard(grade, section, exam, subj, 1)[1][0]
+    return best[0] if type(best) == list else best
 
 def getExmTotal(uid, exam=''):
     if not exam:
@@ -71,9 +78,8 @@ def getExmTotal(uid, exam=''):
     return sum(SQL.getMarks(uid, exam))
 
 def getExmBest(grade, section, exam=''):
-    best = getLeaderboard(grade, section, exam, 1)[0]
-    uid = best[0] if type(best) == list else best
-    return getExmTotal(uid, exam)
+    best = getLeaderboard(grade, section, exam, 1)[1][0]
+    return best[0] if type(best) == list else best
 
 def calcSubjPercentage(uid, exam=''):
     marks = SQL.getMarks(uid, exam)
@@ -84,3 +90,6 @@ def calcSubjPercentage(uid, exam=''):
         subjMarks = marks[i*2] + marks[i*2+1]
         subjPercentages.append(subjMarks / totalMarks * 100)
     return subjPercentages
+
+
+print_('File-leaderboard.py Setup-Complete')

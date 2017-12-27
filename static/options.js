@@ -1,91 +1,93 @@
-function submit() {
-	let options = ['stndrd', 'section', 'exam'];
-	let params = {'stndrd': null, 'section': null, 'exam': null};
-	$.each(options, function (_, option) {
-		params[option] = $('#' + option).val();
-	});
-	if (!params.exam) {
-		params.exam = 'all';
-	}
-	if (!(params.stndrd && params.section)) {
-		console.log('Please provide both standard and section');
-	}
-	else {
-		location.href = '?stndrd=' + params.stndrd + '&section=' + params.section + '&exam=' + params.exam
-	}
-}
+class Options{
+    constructor(div, page) {
+        if (div.charAt(0) != '#') {
+            div = '#' + div;
+        }
+        this.div = div;
+        this.page = page;
+        this.examList = ['Exams', 'exam'];
+        this.params = [];
+        this.selected = [];
+    }
 
-function strtsWithStndrd(getParam) {
-	return getParam.slice(0, 6) == 'stndrd';
-}
-function strtsWithSection(getParam) {
-	return getParam.slice(0, 7) == 'section';
-}
-function strtsWithExam(getParam) {
-	return getParam.slice(0, 4) == 'exam';
-}
+    renderSubmitButton() {
+        let html = "<button id='submit' class='btn btn-primary btn-block optionsBtn'>Submit</button>";
+        $(this.div).append(html);
+        let params = this.params;
+        let selected = this.selected;
+        let page = this.page;
+        $('#submit').click(function() {
+            params.forEach(function(param) {
+                selected.push($('#' + param).val());
+            });
+            let webArgs = '?';
+            for (let i=0; i < params.length; i++) {
+                webArgs += params[i] + '=' + selected[i] + '&';
+            }
+            location.href = page + webArgs.slice(0, -1);
+        });
+    }
 
-function leaderboardOptions(div) {
-	let options = {'stndrd': 'Standard', 'section': 'Section', 'exam': 'Exam'};
-	getParams = location.search.substr(1).split('&');
-	
-	let stndrd = getParams.find(strtsWithStndrd)
-	if (stndrd) {
-		stndrd = stndrd.replace('stndrd=', '');
-	}
-	else {
-		stndrd = '10';
-	}
+    renderSelect(label, id) {
+        let optionsContOpen = "<div class='optionsCont'>";
+        let optionsLabel = "<label for='" + id + "'>" + label + "</div>";
+        let optionsSelect = "<select id='" + id + "' class='form-control'></select>";
+        let optionsContClose = "</div>";
+        let html = optionsContOpen + optionsLabel + optionsSelect + optionsContClose;
+        $(this.div).append(html);
+    }
 
-	let section = getParams.find(strtsWithSection)
-	if (section) {
-		section = section.replace('section=', '');
-	}
-	else {
-		section = 'A';
-	}
-	let exam = getParams.find(strtsWithExam)
-	if (exam) {
-		exam = exam.replace('exam=', '');
-	}
-	else {
-		exam = 'All';
-	}
-	
-	let titleClass = "<div class='params'>";
-	let selectClass = "class='select'";
-	let html = titleClass + "Standard: <select id='stndrd'" + selectClass + "><option selected>" + stndrd  + "</option></select></div>";
-	html += titleClass + "Section: <select id='section'" + selectClass + "><option selected>"+ section + "</option></select></div>";
-	html += titleClass + "Exam: <select id='exam'" + selectClass + "><option selected>" + exam + "</option></select></div>";
-	html += "<a id='submit' class='button' onClick=submit()>Submit</a>"
-	$('#' + div).html(html);
+    addSelectOptions(options, id) {
+        id = '#' + id;
+        try {
+            options.forEach(function (opt) {
+                $(id).append($('<option>', {
+                    value: opt,
+                    text: opt
+                }));
+            });
+        }
+        catch(e) {
+            $.each(options, function(uid, name) {
+                $(id).append($('<option>', {
+                    value: uid,
+                    text: name
+                }));
+            });
+        }
+    }
 
-	let stndrds = ['10', '9', '8', '7', '6', '5', '4', '3', '2', '1'];
-	let sections = ['A', 'B', 'C'];
-	let exams = ['All', 'FA1', 'FA2', 'SA1', 'FA3', 'FA4', 'SA2'];
-	
-	stndrds.splice(stndrds.indexOf(stndrd), 1);
-	sections.splice(sections.indexOf(section), 1);
-	exams.splice(exams.indexOf(exam), 1);
+    setExamOptions() {
+        this.params.push('exam');
+        this.renderSelect(this.examList[0], this.examList[1]);
+        this.addSelectOptions(['All'].concat(exams), 'exam');
+    }
 
-	$.each(stndrds, function (_, stndrd) {
-		$('#stndrd').append($('<option>', {
-			value: stndrd,
-			text: stndrd
-		}));
-	});
+    setStudentOptions(students) {
+        this.params.push('uid');
+        let studentList = ['Student', 'uid'];
+        this.renderSelect(studentList[0], studentList[1]);
+        this.addSelectOptions(students, 'uid');
+    }
 
-	$.each(sections, function (_, section) {
-			$('#section').append($('<option>', { 
-				value: section,
-				text : section 
-			}));
-	});
+    setStandardOptions() {
+        this.params.push('standard');
+        let standardList = ['Standard', 'standard'];
+        this.renderSelect(standardList[0], standardList[1]);
+        let standards = ['10', '9', '8', '7', '6', '5', '4', '3', '2', '1'];
+        this.addSelectOptions(standards, 'standard');
+    }
 
-	$.each(exams, function (_, exam) {
-			$('#exam').append($('<option>', { 
-				value: exam,
-				text : exam 
-			}));
-	});
+    setSectionOptions() {
+        this.params.push('section');
+        let sections = ['A', 'B', 'C'];
+        let sectionList = ['Section', 'section'];
+        this.renderSelect(sectionList[0], sectionList[1]);
+        this.addSelectOptions(sections, 'section');
+    }
+
+    setGradeOptions() {
+        this.setStandardOptions();
+        this.setSectionOptions();
+    }
 }

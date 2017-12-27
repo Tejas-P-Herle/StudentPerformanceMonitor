@@ -1,0 +1,133 @@
+{% extends 'layout.html' %}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+{% endblock %}
+{% block title %}SPM: Home{% endblock %}
+{% block body %}
+
+<div class="jumbotron text-center" style="background-image: url(/static/stats.png)">
+    <h1>Student Performance Monitor</h1>
+</div>
+
+<div id="about" class="container-fluid">
+    <h2>About SPM</h2><br>
+    <div class="row">
+        <div class="col-md-8">
+            <h4>A student performes better than he did last time and hold a better position in the class but his
+                marks show otherwise. This may be because of many factors like the toughness of the paper, the
+                thoughness of the consepts for the exam etc. So to get to know the student's true performance and to
+                bring to light the student's effort, SPM has been created. SPM short for Student Performance Monitor
+                is a Data Science project for educationists aimed at helping in student performance analysis in
+                graphical foramts. It helps in discovering a student's performance, class performance and others
+                factors in unconventional ways which usually go unnoticed.</h4>
+        </div>
+        <div class="col-md-4">
+            <img src="/static/about.jpg" width="100%">
+        </div>
+    </div>
+</div>
+
+<div id="advantages" class="container-fluid">
+    <h2 id="h2Advantage">Advantages of using SPM</h2><br>
+    <div class="row">
+        <div class="col-md-4">
+            <img src="/static/advantage.jpg" width="100%">
+        </div>
+        <div id='h4Advantages' class="col-md-8">
+            <h4>* Students position with respect to the class is clearly seen<br>
+                * Students improvement with respect to the last exam is displayed<br>
+                * Students strengths and weaknesses are displayed<br>
+                * Subject-wise performance is seen<br>
+                * Gives a clear idea of a students performance<br>
+            </h4>
+        </div>
+    </div>
+</div>
+
+<div id="pages" class="container-fluid" style="margin-bottom: 20px; margin-top: 20px">
+    <div class="text-center">
+        <h2>Pages</h2>
+        <h4>Choose a page you want to explore</h4>
+    </div>
+    <div class="row slideanim">
+        <div class="col-sm-6 col-xs-12">
+            <div class="panel panel-default text-center">
+                <div class="panel-heading">
+                    <h1>Leaderboard</h1>
+                </div>
+                <div class="panel-body">
+                    <h4>Class Performance</h4>
+                    <p id="panel1text" class="panel-text">Indicates <strong>class performance</strong> rather than a
+                        single student's performance. Its graphs include, the percentage and percentile of every student
+                        of a given class in a given exam, the improvement of students in each subject or the improvement
+                        of a student over the period of all the exams.It even displays the top ten performers of a given
+                        class of all the exams or of a given exam.</p>
+                    <p class="panel-footer">Click to visit Leaderboard Page</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xs-12">
+            <div class="panel panel-default text-center">
+                <div class="panel-heading">
+                    <h1>Student</h1>
+                </div>
+                <div class="panel-body">
+                    <h4>Student Performance</h4>
+                    <p id="panel2text" class="panel-text">Gives importance to a <strong>single student's
+                        performance</strong> rather than the whole class. Its graphs include, percentage of each subject
+                        or all the exams (for side-by-side comparision of each subject's performance or exams), a
+                        student's relative position based on percentage and percentile with respect to the class best,
+                        class least and the class average and the student's improvement based on both percentage and
+                        percentile over the period of all the exams. The student's performance of each subject over the
+                        period of all the exams is displayed.
+                    </p>
+                    <p class="panel-footer">Click to visit Student Page</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function(){
+    $('.panel').on('click', function(event) {
+        let elem = event.currentTarget;
+        let url = elem.children[0].children[0].innerHTML.toLowerCase();
+        location.href = '/' + url;
+    });
+
+    function matchHeights() {
+        $('#panel1text').height($('#panel2text').height() + 'px');
+    }
+
+    $(window).resize(function() { matchHeights(); });
+
+    $(window).scroll(function() {
+        $(".slideanim").each(function(){
+            var pos = $(this).offset().top;
+
+            var winTop = $(window).scrollTop();
+            if (pos < winTop + 600) {
+                $(this).addClass("slide");
+                matchHeights();
+            }
+        });
+    });
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+{% endblock %}

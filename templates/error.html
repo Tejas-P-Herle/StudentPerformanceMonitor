@@ -1,11 +1,19 @@
 {% extends "layout.html"%}
-{% block title %}{{ errorPage }}-ERROR{% endblock %}
+{% block title %}{{ errorTitle }}{% endblock %}
+{% block bodyClass %}"container"{% endblock %}
 {% block body %}
-<div id='error'>{{ errorMsg }}</div>
-<div id='errorElems'></div>
+<style>
+    #copyright {
+        position: absolute;
+        bottom: 0;
+    }
+    label {
+        font-size: 1.5pc;
+    }
+</style>
+<h2 id='error' style="text-align: center;">{{ errorMsg }}</h2>
+<div id='errorDiv'></div>
 <script>
-	if ('{{ errorNo }}' == 'ER0101') { 
-		leaderboardOptions('errorElems');
-	}
+	let error = new ErrorObj('{{ errorNo }}', 'errorDiv');
 </script>
 {% endblock %}
