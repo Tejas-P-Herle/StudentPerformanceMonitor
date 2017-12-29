@@ -200,6 +200,7 @@ def student():
     else:
         exmTotal = exmObj['total']
 
+    percents = []
     prevPercents = []
     prevPertiles = []
     for e in exams:
@@ -212,13 +213,18 @@ def student():
     totalPercent = exmObj.calcPercentage('') if exam == '' else prevPercents[exams.index(exam)]
     totalPertile = exmObj.calcPercentile('') if exam == '' else prevPertiles[exams.index(exam)]
 
+    if exam:
+        marks = SQL.getMarks(uid, exam)
+        for i in range(0, len(marks), 2):
+            percents.append(marks[i] + marks[i + 1])
+
     with open(os.path.join(app.root_path, 'documentation') + '\\student\\card1Doc.txt', 'r') as file1:
         card1Doc = file1.read().replace('\n', '')
 
     with open(os.path.join(app.root_path, 'documentation') + '\\student\\card2Doc.txt', 'r') as file2:
         card2Doc = file2.read().replace('\n', '')
 
-    return render_template('student.html', uid=uid, exam=exam, name=name, chngPercent=chngPercent,
+    return render_template('student.html', uid=uid, exam=exam, name=name, percents=percents, chngPercent=chngPercent,
                            chngPertile=chngPertile, exmTotal=exmTotal, prevPercents=prevPercents,
                            prevPertiles=prevPertiles, totalPercent=totalPercent, totalPertile=totalPertile,
                            card1Doc=card1Doc, card2Doc=card2Doc)
@@ -237,8 +243,6 @@ def logo():
 
 
 if __name__ == '__main__':
-    # default = input('Use Default? <Y/N> ')
-    # config = Config('config.ini', default[0].lower() == 'y')
     config = Config('config.ini')
     print_('File-application.py Setup-Complete')
     print_('File-application.py Compressing App')

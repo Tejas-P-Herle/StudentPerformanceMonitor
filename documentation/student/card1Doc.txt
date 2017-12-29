@@ -1,4 +1,4 @@
-A Student's performance in percentage of a given set of exams or subjects.
-In the given set of exams or subjects, a student's performance based on percentage being displayed with the best percentage obtained by the class, the avarage percentage obtained by the class and the least percentage by the class.
-In the given set of exams or subjects, a student's performance based on percentile being displayed with the best percentile obtained by the class(Always 100), the avarage percentile obtained by the class and the least percentile by the class.
+A Student's performance in percentage for a given set of exams subjects.
+For the given set of exams subjects, a student's performance in percentage, with respect to the best percentage obtained by the class, the average percentage obtained by the class and the least percentage obtained by the class.
+For the given set of exams subjects, a student's performance in percentile with respect to the best percentile obtained by the class (Always 100), the average percentile obtained by the class and the least percentile obtained by the class.
 A Student's performance based on percentage and percentile over the span of all the exams.

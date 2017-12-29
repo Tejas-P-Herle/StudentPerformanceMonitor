@@ -11,20 +11,29 @@ function main() {
 	let exam = htmlParams.exam;
 	$('#percent').html(htmlParams.totalPercent);
 	$('#pertile').html(htmlParams.totalPertile);
+	let percents = htmlParams.percents;
+
+	let options = new Options('options', 'student');
+	options.setGradeOptions();
+	options.renderSubmitButton();
 
 	let exams = ['FA1', 'FA2', 'SA1', 'FA3', 'FA4', 'SA2'];
 	let gsTitleZero = (exam == '') ? "Student's Exams Performance" : "Student's Subject Strength";
+    let gsTextListReplace = (exam == '') ? " subjects" : " exams";
 
 	gs.graphFuncs = [getBarStdntPercent, getStdntPosPercent, getStdntPosPertile, setImprmnt];
 	gs.currList = ['barStdntPercent', 'stdntPosPercent', 'stdntPosPertile', 'imprmnt'];
 	gs.currTitleList = [gsTitleZero, "Student's Relative Percent", "Student's Relative Percentile", "Student's Percentage and Percentile Improvement"];
-    gs.currTextList = htmlParams.card1Doc.replace(/&#34;/g, '"').replace(/&#39;/g, "'").split('.').slice(0, -1)
+    gs.currTextList = htmlParams.card1Doc.replace(/&#34;/g, '"').replace(/&#39;/g, "'").split('.').slice(0, -1);
+    ([0, 1, 2]).forEach(function(index) {
+        gs.currTextList[index] = gs.currTextList[index].replace(gsTextListReplace, '');
+    });
 
 	gs2.graphFuncs = [getStdntPosILan, getStdntPosIILan, getStdntPosIIILan, getStdntPosMaths, getStdntPosScience, getStdntPosSocial];
 	gs2.currList = ['stdntPosILan', 'stdntPosIILan', 'stdntPosIIILan', 'stdntPosMaths', 'stdntPosScience', 'stdntPosSocial'];
 	gs2.currTitleList = ["Student's I Language Performance", "Student's II Language Performance", "Student's III Language Performance",
 						 "Student's Maths Performance", "Student's Science Performance", "Student's Social Performance"];
-    gs2.currTextList = htmlParams.card2Doc.replace(/&#34;/g, '"').replace(/&#39;/g, "'").split('.').slice(0, -1)
+    gs2.currTextList = htmlParams.card2Doc.replace(/&#34;/g, '"').replace(/&#39;/g, "'").split('.').slice(0, -1);
 
 	let chngPercent = htmlParams.chngPercent;
 	let chngPertile = htmlParams.chngPertile;
@@ -44,6 +53,10 @@ function main() {
 				   ? prevPertiles.slice(1, -1).split(', ').map(parseFloat)
 				   : null;
 
+	percents = percents != '[]'
+				   ? percents.slice(1, -1).split(', ').map(parseFloat)
+				   : null;
+
 	if (exam == '') {
 		$('#exam').html('All');
 		isExam = true;
@@ -60,6 +73,9 @@ function main() {
         $('#graphEntity2').remove();
 	}
 
+    if (chngPercent == 0) {
+        $('.change_tr').remove()
+    }
 	if (parseFloat(chngPercent) > 0) {
 		let text = $('#chngPercent').text()
 		$('#chngPercent').text('+' + text)
@@ -97,8 +113,8 @@ function main() {
 	
 	function getBarStdntPercent(graphObj) {
 		loading(graphObj);
-		currVar = prevPercents;
-		plotBarGraph('stdntMarks', graphObj);
+		currVar = exam ? percents : prevPercents;
+		plotBarGraph('barStdntPercent', graphObj);
 	}
 
 	currListIndex = ['I_Lan', 'II_Lan', 'III_Lan', 'Maths', 'Science', 'Social'];

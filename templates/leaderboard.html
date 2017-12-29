@@ -8,7 +8,12 @@
 {% block body %}
 {{ super() }}
 <div><h1 class="display-4">Leaderboard</h1></div>
-<div id='options'></div>
+<button data-toggle="collapse" data-target="#options" class="btn btn-primary" style="margin-top: 15px; margin-bottom: 15px">
+    Change Class
+</button>
+
+<div id="options" class="collapse"></div>
+
 <table class='table'>
     <thead class='thead-dark'>
     <th>Rank</th>

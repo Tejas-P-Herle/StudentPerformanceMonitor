@@ -7,6 +7,13 @@
 {% block bodyClass %}"container"{% endblock %}
 {% block body %}
 <div><h1 class="display-4">Student</h1></div>
+
+<button data-toggle="collapse" data-target="#options" class="btn btn-primary" style="margin-top: 15px; margin-bottom: 15px">
+    Change Class
+</button>
+
+<div id="options" class="collapse"></div>
+
 <table class="table">
     <thead class="thead-dark">
     <th>Data Field</th>
@@ -40,13 +47,13 @@
         <td>Percentile</td>
         <td><div id='pertile'>{{ pertile }}</div></td>
     </tr>
-    <tr>
+    <tr class="change_tr">
         <td>Change in Percentage</td>
         <td>
             <div id='chngPercent'>{{ chngPercent }}</div>
         </td>
     </tr>
-    <tr>
+    <tr class="change_tr">
         <td>Change in Percentile</td>
         <td>
             <div id='chngPertile'>{{ chngPertile }}</div>
@@ -54,7 +61,7 @@
     </tr>
 </table>
 <div id='graphEntity1' class='graphEntity'>
-    <div id='graphTitle'><h4>Basic Graphs</h4></div>
+    <div id='graphTitle1'><h4>Basic Graphs</h4></div>
     <div id='graphCont1' class='graphCont card'>
         <div id='graphDiv' class="card-img-top" style="height: 250px;"></div>
         <div class="card-body">
@@ -71,7 +78,9 @@
         <span class="dot dotClass1 imprmntDot" onclick="gs.setGraph(3)"></span>
     </div>
 </div>
+
 <div id='graphEntity2' class='graphEntity'>
+    <div id='graphTitle2'><h4>Subject Related Graphs</h4></div>
     <div id='graphCont2' class='graphCont card'>
         <div id='graphDiv2' class="card-img-top" style="height: 250px;"></div>
         <div class="card-body">
@@ -95,7 +104,7 @@
 	let gs2 = new GraphSwitcher('graphDiv2', '2');
 	$(document).ready(function() {
 		let htmlParams = {
-            'name': '{{ name }}', 'prevPercents': '{{ prevPercents }}',
+            'name': '{{ name }}', 'percents': '{{ percents }}', 'prevPercents': '{{ prevPercents }}',
             'prevPertiles': '{{ prevPertiles }}', 'exam': '{{ exam }}',
             'uid': '{{ uid }}', 'chngPercent': '{{ chngPercent }}',
             'chngPertile': '{{ chngPertile }}', 'totalPercent': '{{ totalPercent }}',

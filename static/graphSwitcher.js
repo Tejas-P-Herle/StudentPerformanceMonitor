@@ -47,6 +47,7 @@ class GraphSwitcher {
 		this.changeDot(graphNo);
 		this.showGraph(graphNo);
 	}
+
 	replot() {
 		this.graphFuncs[this.currList.indexOf(this.curr)](this.graphObj);
 	}

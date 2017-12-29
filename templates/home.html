@@ -14,12 +14,12 @@
     <h2>About SPM</h2><br>
     <div class="row">
         <div class="col-md-8">
-            <h4>A student performes better than he did last time and hold a better position in the class but his
+            <h4>A student performs better than he did last time and holds a better position in the class but his
                 marks show otherwise. This may be because of many factors like the toughness of the paper, the
-                thoughness of the consepts for the exam etc. So to get to know the student's true performance and to
-                bring to light the student's effort, SPM has been created. SPM short for Student Performance Monitor
-                is a Data Science project for educationists aimed at helping in student performance analysis in
-                graphical foramts. It helps in discovering a student's performance, class performance and others
+                toughness of the concepts for the exam etc. So to get to know the student's true performance and to
+                bring to light the student's effort, SPM has been created. SPM - Student Performance Monitor
+                is a Data Science project for educationists aimed at helping in student performance analysis through
+                graphical charts. It helps in discovering a student's performance, class performance and others
                 factors in unconventional ways which usually go unnoticed.</h4>
         </div>
         <div class="col-md-4">
@@ -58,11 +58,13 @@
                 </div>
                 <div class="panel-body">
                     <h4>Class Performance</h4>
-                    <p id="panel1text" class="panel-text">Indicates <strong>class performance</strong> rather than a
-                        single student's performance. Its graphs include, the percentage and percentile of every student
-                        of a given class in a given exam, the improvement of students in each subject or the improvement
-                        of a student over the period of all the exams.It even displays the top ten performers of a given
-                        class of all the exams or of a given exam.</p>
+                    <p id="panel1text" class="panel-text">Indicates <strong> whole class performance</strong>.
+                        Its graphs include,<br>
+                        &bull; The percentage and percentile of every student of a given class<br>
+                        &bull; The improvement of students in each subject<br>
+                        &bull; The improvement of a student over the period of all the exams<br>
+                        &bull; It also displays the top ten performers of a given class for all the exams<br>
+                    </p>
                     <p class="panel-footer">Click to visit Leaderboard Page</p>
                 </div>
             </div>
@@ -74,13 +76,11 @@
                 </div>
                 <div class="panel-body">
                     <h4>Student Performance</h4>
-                    <p id="panel2text" class="panel-text">Gives importance to a <strong>single student's
-                        performance</strong> rather than the whole class. Its graphs include, percentage of each subject
-                        or all the exams (for side-by-side comparision of each subject's performance or exams), a
-                        student's relative position based on percentage and percentile with respect to the class best,
-                        class least and the class average and the student's improvement based on both percentage and
-                        percentile over the period of all the exams. The student's performance of each subject over the
-                        period of all the exams is displayed.
+                    <p id="panel2text" class="panel-text">Gives analysis of a <strong>single student's
+                        performance</strong>. Its graphs include,<br>
+                        &bull; Student's percentage graphs, a student's relative position based on percentage and percentile<br>
+                        &bull; The student's improvement based on both percentage and percentile over the period of all the exams<br>
+                        &bull; The student's performance of each subject over the period of all the exams is displayed<br>
                     </p>
                     <p class="panel-footer">Click to visit Student Page</p>
                 </div>
@@ -114,6 +114,10 @@ $(document).ready(function(){
         });
     });
 })
+
+
+
+
 
 
 

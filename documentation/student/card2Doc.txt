@@ -1,6 +1,6 @@
-The Student's performance based on percentage in I Language displayed with the best, average and least percentages obtained in I Language over the period of all the exams.
-The Student's performance based on percentage in II Language displayed with the best, average and least percentages obtained in II Language over the period of all the exams.
-The Student's performance based on percentage in III Language displayed with the best, average and least percentages obtained in III Language over the period of all the exams.
-The Student's performance based on percentage in Maths displayed with the best, average and least percentages obtained in Maths over the period of all the exams.
-The Student's performance based on percentage in Science displayed with the best, average and least percentages obtained in Science over the period of all the exams.
-The Student's performance based on percentage in Social displayed with the best, average and least percentages obtained in Social over the period of all the exams.
+The Student's performance based on percentage in 'I Language' displayed with the best, average and least percentages obtained in 'I Language' over the period of all the exams.
+The Student's performance based on percentage in 'II Language' displayed with the best, average and least percentages obtained in 'II Language' over the period of all the exams.
+The Student's performance based on percentage in 'III Language' displayed with the best, average and least percentages obtained in 'III Language' over the period of all the exams.
+The Student's performance based on percentage in 'Maths' displayed with the best, average and least percentages obtained in 'Maths' over the period of all the exams.
+The Student's performance based on percentage in 'Science' displayed with the best, average and least percentages obtained in 'Science' over the period of all the exams.
+The Student's performance based on percentage in 'Social' displayed with the best, average and least percentages obtained in 'Social' over the period of all the exams.

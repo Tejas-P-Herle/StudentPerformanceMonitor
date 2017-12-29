@@ -13,13 +13,17 @@ function main(htmlParams){
 	let examParam = window.location.search.substr(1).split('&');
 	examParam = examParam.find(function(param) { return param.slice(0, 4) == 'exam' });
 	examParam = examParam ? examParam.replace('exam=', '') : null;
-	examParam = examParam == 'All' ? null : examParam;
+	examParam = (examParam == 'All') ? null : examParam;
+	let gsTextListReplace = (!examParam) ? " a given exam" : " all exams";
 
     gs.graphFuncs = [getClassPercent, getClassPertile, getClassPercentImpr, getClassPertileImpr];
 	gs.currList = ['percent', 'pertile', 'percentImpr', 'pertileImpr'];
 	gs.currTitleList = ['Class Performance - Percent', 'Class Performance - Percentile',
 	                    'Class Performance - Percent Improvement', 'Class Performance - Percentile Improvement'];
-	gs.currTextList = htmlParams.card1Doc.replace(/&#34;/g, '"').replace(/&#39;/g, "'").split('.').slice(0, -1)
+	gs.currTextList = htmlParams.card1Doc.replace(/&#34;/g, '"').replace(/&#39;/g, "'").split('.').slice(0, -1);
+	([0, 1]).forEach(function(index) {
+        gs.currTextList[index] = gs.currTextList[index].replace(gsTextListReplace, '');
+    });
 	let options = new Options('options', 'leaderboard');
 	options.setGradeOptions();
 	options.setExamOptions();
